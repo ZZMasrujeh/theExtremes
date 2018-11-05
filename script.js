@@ -1,4 +1,5 @@
 const URL = "https://codecyprus.org/th/api/";
+const LIST = "list";
 
 //get available quizzes
 HTTP = new XMLHttpRequest();
