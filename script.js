@@ -29,7 +29,7 @@ var quizName = "";  //new or from cookie ?????name vs ID?????
 
 var answerBox;  //temporarily storing the representation of the answer area
 
-var header = document.getElementById("head");
+var header = document.getElementById("header");
 var content = document.getElementById("content");
 var footer = document.getElementById("footer");
 
@@ -126,7 +126,7 @@ function listAvailableQuizzes() {
             for (let i = 0; i < quizzes.length; i++) {
                 //check which quizzes are available and add them to the list
                 htmlText +=
-                    "<div onclick='showMore("+i+")' class='availableQuiz' id='quiz'>" +
+                    "<div onclick='showMore("+i+")' class='availableQuiz'>" +
                     "<p> <span class='quizzName'>" + quizzes[i].name + ".</span><br></p></div>";
             }
             content.innerHTML = htmlText;    //display the available quizzes in the content div
@@ -258,7 +258,7 @@ function nextQuestion() {
                      Do something for other types of questions
                      *************************************/
                     answerBox = "<p><input type='text' id='answerBox'> " +
-                        "<input type='button' value='done' onclick='answer()'></p>";
+                        "<button type='button' onclick='answer()'>Done</button></p>";
                     content.innerHTML = answerBox;
                     if (question.canBeSkipped) {    //adding the skip button
                         footer.innerHTML = "<button onClick='skip()'>Skip</button>";
