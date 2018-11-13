@@ -1,3 +1,28 @@
-.availableQuiz{
-    color:red;
+.availableQuiz {
+    text-align: center;
+    color: black;
+    background-color: darkgrey;
+    border: double red 8px;
+    font-size: 15px;
+}
+.description {
+    color: blue;
+    text-decoration-line: underline;
+}
+.quizzName {
+    color: black;
+    border: solid;
+    font-weight: bold;
+    font-size: 20px;
+}
+body{
+    background-color: #ebf5c4;
+}
+#content{
+margin: 3%;
+    border: solid 3px yellow;
+}
+.button{
+    position: relative;
+    left: 15%;
 }
