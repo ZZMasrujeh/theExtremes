@@ -288,7 +288,7 @@ function nextQuestion() {
                      Do something for other types of questions
                      *************************************/
                     if (question.questionType == "INTEGER" || question.questionType == "NUMERIC" ) {
-                        answerBox= "<p>" +
+                        answerBox= "<div id='dials'><p>" +
                             "<input type='button' onclick='addToAnswerBox("+1+")' value='1'>" +
                             "<input type='button' onclick='addToAnswerBox("+2+")' value='2'>" +
                             "<input type='button' onclick='addToAnswerBox("+3+")' value='3'><br>"+
@@ -299,24 +299,24 @@ function nextQuestion() {
                             "<input type='button' onclick='addToAnswerBox("+8+")' value='8'>" +
                             "<input type='button' onclick='addToAnswerBox("+9+")' value='9'><br>"+
                             "<input type='button' onclick='addToAnswerBox(" +'"."'+ ")' value='.'>" +
-                            "<input type='button' onclick='addToAnswerBox("+0+")' value='0'></p>" +
+                            "<input type='button' onclick='addToAnswerBox("+0+")' value='0'></p></div>" +
                             "<p><input type='text' id='answerBox'></p>"+
                             "<p><button type='button' onclick='answer()'>Answer</button></p>";
                     }else if(question.questionType=="BOOLEAN") {
-                        answerBox="<p>"+
+                        answerBox="<div id='radios'><p>"+
                             "<input class='radio' type='radio' name='boolean' value='true'>True<br>"+
                             "<input class='radio' type='radio' name='boolean' value='false'>False</p>"+
-                            "<p><button type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p>";
+                            "<p><button type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p></div>";
                     }else if(question.questionType=="TEXT"){
                         answerBox="<p><input type='text' id='answerBox'></p>"+
                             "<p><button type='button' onclick='answer()'>Answer</button></p>";
                     }else if (question.questionType == "MCQ") {
-                        answerBox="<p>" +
+                        answerBox="<div id='radios'><p>" +
                             "<input class='radio' type='radio' name='boolean' value='a'>A<br>"+
                             "<input class='radio' type='radio' name='boolean' value='b'>B<br>" +
                             "<input class='radio' type='radio' name='boolean' value='c'>C<br>" +
                             "<input class='radio' type='radio' name='boolean' value='d'>D<br>" +
-                            "</p>"+
+                            "</p></div>"+
                             "<p><button type='button' onclick='answer("+'"MCQ"'+")'>Answer</button></p>";
                     }
                     content.innerHTML = answerBox;
