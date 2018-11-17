@@ -12,6 +12,8 @@ const ANSWER = URL+"answer?";
 const ANSWER_P = "answer=";
 const LEADERBOARD = URL + "leaderboard?";
 const SCORE = URL + "score?";
+const LOCATION = URL + "location?";
+const LOCATION_INTERVAL = 60000;
 
 /************************************************************************
  * Scenario 1: the page starts from the beggining                       *
@@ -36,12 +38,19 @@ var footer = document.getElementById("footer");
 var navigation = [];    //will be used to hold the navigation of the users
 var buttonDiv = document.createElement("div");  //div of backButton, for naviagation
 buttonDiv.innerHTML = "<button onclick='backButton()'>Back</button>";
+let scoreNumber =0;
+
+var quizHasFinished = false;
 
 //continuing from previous session
 if (document.cookie!=""){
     console.log(document.cookie);
     session = readFromCookie("session");
     quizName = readFromCookie("quizName");
+    playersName = readFromCookie("playersName");
+    getLocation();
+    setInterval(getLocation,LOCATION_INTERVAL );
+
     if (session!="") {
         footer.innerHTML = "<p>Cookie with content session: " + session + "</p>"
     }
@@ -131,8 +140,11 @@ function listAvailableQuizzes() {
             }
             content.innerHTML = htmlText;    //display the available quizzes in the content div
         }
-        footer.innerHTML = "";
         navigation.push("list");
+        if (quizName != "") {
+            footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
+
+        }else footer.innerHTML = "";
     };
 }
 
@@ -165,6 +177,10 @@ function showMore(quizNumber) {  //more details about the selected quiz
     htmlText += "by: " + quizzes[quizNumber].ownerEmail + "<br><br>" ;
     console.log(session);
 
+    quizName = quizzes[quizNumber].name;
+    /****************************************************************************************
+        this is necessary, otherwise this if(quizName != quizzes[quizNumber].name) wont work
+     ***************************************************************************************/
     // In case the page is closed and reopened: checks if there is a stored session *
     if (session != "") { // already running a quiz
         if (quizName != quizzes[quizNumber].name) {  //if a different quiz from the one that is running, is selected
@@ -204,13 +220,18 @@ function getQuiz(quizNumber) {
                 console.log(preQuestions);
                 if (preQuestions.status != "ERROR") {
                     console.log(JSON.stringify(preQuestions));
-                    saveInCookie("session", preQuestions.session, quizSelected.endsOn);
-                    session = preQuestions.session;
-                    saveInCookie("quizName", quizSelected.name, quizSelected.endsOn);
-                    nextQuestion();
                     /*************************
                      * QUIZ HAS STARTED
                      ************************/
+                    saveInCookie("session", preQuestions.session, quizSelected.endsOn);
+                    session = preQuestions.session;
+                    saveInCookie("quizName", quizSelected.name, quizSelected.endsOn);
+                    quizName = quizSelected.name;
+                    saveInCookie("playersName", playersName, quizSelected.endsOn);
+                    getLocation();
+                    setInterval(getLocation,LOCATION_INTERVAL );
+                    nextQuestion();
+
                 } else {
                     footer.innerHTML = preQuestions.errorMessages;
                 }
@@ -233,32 +254,71 @@ function nextQuestion() {
         if (this.status == 200) {
             let response = this.responseText;
             let question = JSON.parse(response);
+            let totalQuestions = question.numOfQuestions;
+            let currentQuestion = question.currentQuestionIndex + 1;
             console.log("question fetched. displaying...");
             console.log(question);
             if (questionRequest.requiresLocation) {
-                //location update
+                getLocation();
             }
-
             if (question.status == "OK") {
                 if (question.completed) {
+                    //leaderboard() with session ?
+                    quizHasFinished = true;
                     /*************************************
                      Quiz has finished
                      *************************************/
                     //clear all
-                    content.innerHTML = "<span>The quiz has finished</span>";
+                    header.innerHTML = "Congratulations " + playersName + " for completing the quiz<br>" +
+                        "Your final score is "+scoreNumber+" points.";
+
                     deleteCookie();
                     session = "";
                     playersName = "";
                     quizName = "";
+                    answerBox = "";
+                    content.innerHTML = "";
+                    footer.innerHTML = "";
 
-                    //leaderboard() with session ?
+
                 } else {
-                    header.innerHTML = "<p>" + question.questionText + "</p>";
+                    header.innerHTML = "<p>Question "+currentQuestion+"/"+totalQuestions+":<br>"
+                        + question.questionText + "</p>";
                     /*************************************
                      Do something for other types of questions
                      *************************************/
-                    answerBox = "<p><input type='text' id='answerBox'> " +
-                        "<button type='button' onclick='answer()'>Done</button></p>";
+                    if (question.questionType == "INTEGER" || question.questionType == "NUMERIC" ) {
+                        answerBox= "<p>" +
+                            "<input type='button' onclick='addToAnswerBox("+1+")' value='1'>" +
+                            "<input type='button' onclick='addToAnswerBox("+2+")' value='2'>" +
+                            "<input type='button' onclick='addToAnswerBox("+3+")' value='3'><br>"+
+                            "<input type='button' onclick='addToAnswerBox("+4+")' value='4'>" +
+                            "<input type='button' onclick='addToAnswerBox("+5+")'value='5'>" +
+                            "<input type='button' onclick='addToAnswerBox("+6+")' value='6'><br>"+
+                            "<input type='button' onclick='addToAnswerBox("+7+")' value='7'>" +
+                            "<input type='button' onclick='addToAnswerBox("+8+")' value='8'>" +
+                            "<input type='button' onclick='addToAnswerBox("+9+")' value='9'><br>"+
+                            "<input type='button' onclick='addToAnswerBox(" +'"."'+ ")' value='.'>" +
+                            "<input type='button' onclick='addToAnswerBox("+0+")' value='0'></p>" +
+                            "<p><input type='text' id='answerBox'></p>"+
+                            "<p><button type='button' onclick='answer()'>Answer</button></p>";
+                    }else if(question.questionType=="BOOLEAN") {
+                        answerBox="<p>"+
+                            "<input class='radio' type='radio' name='boolean' value='true'>True<br>"+
+                            "<input class='radio' type='radio' name='boolean' value='false'>False</p>"+
+                            "<p><button type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p>";
+                    }else if(question.questionType=="TEXT"){
+                        answerBox="<p><input type='text' id='answerBox'></p>"+
+                            "<p><button type='button' onclick='answer()'>Answer</button></p>";
+                    }else if (question.questionType == "MCQ") {
+                        answerBox="<p>" +
+                            "<input class='radio' type='radio' name='boolean' value='a'>A<br>"+
+                            "<input class='radio' type='radio' name='boolean' value='b'>B<br>" +
+                            "<input class='radio' type='radio' name='boolean' value='c'>C<br>" +
+                            "<input class='radio' type='radio' name='boolean' value='d'>D<br>" +
+                            "</p>"+
+                            "<p><button type='button' onclick='answer("+'"MCQ"'+")'>Answer</button></p>";
+                    }
                     content.innerHTML = answerBox;
                     if (question.canBeSkipped) {    //adding the skip button
                         footer.innerHTML = "<button onClick='skip()'>Skip</button>";
@@ -268,28 +328,57 @@ function nextQuestion() {
                 }
             }
         }
+        score();
     }
 }
 
-function answer() {
+function answer(type = "") {
     let usersAnswer;
-    usersAnswer = document.getElementById("answerBox").value;
-    let answerRequest = new XMLHttpRequest();
-    answerRequest.open("GET", ANSWER+SESSION+session+AMP+ANSWER_P+usersAnswer,true);
-    answerRequest.send();
-    answerRequest.onload =function () {
-        if (this.status == 200) {
-            let response = this.responseText;
-            let a_response = JSON.parse(response);
-            console.log(a_response);
-            /**********************************
-             * update the score here ?????????
-             ***********************************/
-            if (a_response.correct){    //correct answer + adding the proceed button
-                content.innerHTML ="<p>Correct ! <button onclick='nextQuestion()'>Proceed</button></p>";
-            }else {
-                //incorrect answer
-                content.innerHTML =answerBox+ "<p>Incorrect, try again !</p>";
+    let userHasAnswered;
+    if (type == "BOOLEAN" || type =="MCQ") {
+        let radios = document.getElementsByClassName("radio");
+        for (let i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                usersAnswer = radios[i].value;
+                userHasAnswered = true;
+                break;
+            }
+        }
+    }else {
+        usersAnswer = document.getElementById("answerBox").value;
+        userHasAnswered = usersAnswer != "";
+    }
+
+    if (!userHasAnswered) {
+        content.innerHTML = "<p>An empty response is not an answer !</p>";
+        footer.innerHTML = "<button onclick='nextQuestion()'>Try Again !</button>";
+    } else {
+        let answerRequest = new XMLHttpRequest();
+        answerRequest.open("GET", ANSWER + SESSION + session + AMP + ANSWER_P + usersAnswer, true);
+        answerRequest.send();
+        answerRequest.onload = function () {
+            if (this.status == 200) {
+                let response = this.responseText;
+                let a_response = JSON.parse(response);
+                console.log(a_response);
+                /**********************************
+                 * update the score here ?????????
+                 ***********************************/
+                if (a_response.correct) {    //correct answer + adding the proceed button
+                    answerBox = "";
+                    content.innerHTML = "<p>Correct !</p>";
+                    footer.innerHTML = "<button onclick='nextQuestion()'>Proceed</button>";
+                } else {
+                    if (a_response.message.includes("location")) {
+                        //location sensitive answer
+                        content.innerHTML = "<p>You must be near the location mentioned in the question</p>";
+                    } else {
+                        //incorrect answer
+                        content.innerHTML = "<p>Incorrect.</p>";
+                    }
+                    answerBox = "";
+                    footer.innerHTML = "<button onclick='nextQuestion()'>Try Again !</button>";
+                }
             }
         }
     }
@@ -309,6 +398,16 @@ function skip() {
 function score() {
     let scoreRequest = new XMLHttpRequest();
     scoreRequest.open("GET", SCORE + SESSION + session, true);
+    scoreRequest.send();
+    scoreRequest.onload = function () {
+        if (this.status == 200){
+            let object = JSON.parse(scoreRequest.responseText);
+            console.log("Response of Score");
+            console.log(object);
+            if (!quizHasFinished) footer.innerHTML += "<div><p>Score: " + object.score + "</p></div>  ";
+            scoreNumber = object.score;
+        }
+    }
 }
 
 function leaderboard(quizNumber) {
@@ -332,5 +431,28 @@ function leaderboard(quizNumber) {
             document.getElementById("leaderButton").removeAttribute("onclick");
         }
     }
+}
 
+//code to be executed every x amount of milliseconds
+
+function getLocation() {
+    navigator.geolocation.getCurrentPosition(locationCallback);
+}
+function locationCallback(position) {
+    let latitude = position.coords.latitude;
+    let longitute = position.coords.longitude;
+
+    let locationRequest = new XMLHttpRequest();
+    locationRequest.open("GET", LOCATION + SESSION + session + AMP + "latitude=" + latitude + AMP +
+        "longitude=" + longitute, true);
+    locationRequest.send();
+    locationRequest.onload = function () {
+        let object = JSON.parse(locationRequest.responseText);
+        console.log("Location Response");
+        console.log(object);
+    }
+}
+
+function addToAnswerBox(number){
+    document.getElementById("answerBox").value += number;
 }
