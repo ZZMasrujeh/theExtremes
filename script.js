@@ -217,7 +217,7 @@ function showMore(quizNumber) {  //more details about the selected quiz
     nav();
     header.innerHTML = quizzes[quizNumber].name;
     let htmlText;
-    htmlText = "<div>" +
+    htmlText = "<div id='tHDetailsDiv'>" +
         "<p>"+
         "Description: " + quizzes[quizNumber].description+"<br>";   //description
     if (quizzes[quizNumber].maxDuration/1000/60> 0){
@@ -238,7 +238,7 @@ function showMore(quizNumber) {  //more details about the selected quiz
     } else {
         htmlText+="The questions appear in the same order<br>";
     }
-    htmlText += "by: " + quizzes[quizNumber].ownerEmail + "<br><br>" ;
+    htmlText += "by: " + quizzes[quizNumber].ownerEmail + "<br><br></div>" ;
     console.log(session);
 
     quizName = quizzes[quizNumber].name;/*this is necessary, otherwise ->  if(quizName != quizzes[quizNumber].name)
@@ -260,7 +260,7 @@ function showMore(quizNumber) {  //more details about the selected quiz
         //button to start
     }
     htmlText+="<p id='leaderP'><button onclick='leaderboard(" +quizNumber+
-        ")' id='leaderButton'>Leaderboard</button></p></p></div>";
+        ")' id='leaderButton'>Leaderboard</button></p></p>";
     content.innerHTML = htmlText;
     /****
      * I should do something else to show the leaderboard
@@ -353,7 +353,6 @@ function nextQuestion() {
                     session = "";
                     playersName = "";
                     quizName = "";
-//resume commenting
                     deleteFromCookie("session");
                     deleteFromCookie("quizName");
                     deleteFromCookie("playersName");
