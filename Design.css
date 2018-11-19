@@ -17,35 +17,33 @@
 
 }
 body{
-    background: #ebf5c4 url("wallpaper.jpg") left;
+    // background: #ebf5c4 url("wallpaper.jpg") left;
 
 }
 #content{
     margin: 3%;
-    font-size: 20px;
+    font-size: 10px;
     font-weight: bold;
     color:black;
     font-style: italic;
     text-align: left;
-
-    
 }
 .button{
     position: relative;
-    left: 15%;
+    left: 47%;
 }
 #header{
     text-decoration-line: underline;
-    position: relative;
-    left: 45%;
-    font-size: 20px;
+    text-align: center;
+
+    font-size: 15px;
     color: black;
     font-weight: bold;
 
 }
 #footer{
-    text-align: left;
-    font-size: 20px;
+    text-align: center;
+    font-size: 10px;
     color: black;
     font-weight: bold;
 
@@ -55,5 +53,24 @@ body{
 }
 
 #nameInput{
+
+    text-align: center;
+    position: relative;
+    left: 381px;
+}
+#tHDetailsDiv{
+    border: darkslategrey double 10px;
+}
+#details{
+    text-align: center;
+    font-size: 10px;
+    border-radius: 50px;
+    background: darkslategrey;
+    margin-left: 900px;
+    padding: 10px;
+    color: #ebf5c4;
+}
+
+#startButton{
     position: center;
 }
