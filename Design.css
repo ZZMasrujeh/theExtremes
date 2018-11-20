@@ -35,7 +35,6 @@ body{
 #header{
     text-decoration-line: underline;
     text-align: center;
-
     font-size: 15px;
     color: black;
     font-weight: bold;
@@ -49,9 +48,19 @@ body{
 
 }
 #leaderP{
-    text-align: right;
+    display:inline-block;
+    padding: 10px 15px;
+    font-size: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: lawngreen;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 5px silver;
 }
-
 #nameInput{
 
     text-align: center;
@@ -72,5 +81,64 @@ body{
 }
 
 #startButton{
-    position: center;
+    display:inline-block;
+    padding: 10px 15px;
+    font-size: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: darkturquoise;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 5px silver;
+}
+#resumeButton {
+    display:inline-block;
+    padding: 10px 15px;
+    font-size: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: #10ff2b;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 5px silver;
+}
+#dials{
+    border: solid red 2px;
+    margin-right: 92.1%;
+
+}
+#backButton{
+    display:inline-block;
+    padding: 10px 15px;
+    font-size: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: darkslategrey;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 5px silver;
+    margin-left: 3%;
+}
+#answerBox{
+    display:inline-block;
+    padding: 10px 15px;
+    font-size: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: black;
+    background-color: aqua;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 5px silver;
 }
