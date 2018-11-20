@@ -40,7 +40,7 @@ var footer = document.getElementById("footer");
 var navigation = [];    //will be used to hold the navigation of the users
 var buttonDiv = document.createElement("div");  //div of backButton, for navigation
 buttonDiv.id = "buttonDiv";
-buttonDiv.innerHTML = "<button id='backButton' onclick='backAction()'>Back</button>";
+buttonDivHTML = "<button id='backButton' onclick='backAction()'>Back</button>";
 
 var scoreNumber =0; //saving the score everytime it is updated, calling it when the hunt finishes
 
@@ -54,6 +54,12 @@ var currentQ;   //the questions before it is saved
 var usersA=[];  //all the answers before the correct or skip
 var answersInCookieTime;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
 1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 will be forced*/
+
+var loader ="<div id = 'loader'></div>";
+
+function loadLoader() {
+    content.innerHTML = loader;
+}
 
 //continuing from previous session
 if (document.cookie!=""){   //cookie is not empty
@@ -104,6 +110,7 @@ if (document.cookie!=""){   //cookie is not empty
  ***********************************************************/
 function nav() {
     if (navigation.length > 0) {
+        buttonDiv.innerHTML=buttonDivHTML;
         document.body.appendChild(buttonDiv);
     }
 }
@@ -181,6 +188,7 @@ function deleteFromCookie(property) {
  ****************************************************************************/
 function listAvailableQuizzes() {
     let listRequest = new XMLHttpRequest();
+    loadLoader();
     listRequest.open("GET", LIST, true);
     listRequest.send();
     listRequest.onload = function () {
@@ -201,7 +209,7 @@ function listAvailableQuizzes() {
             content.innerHTML = htmlText;    //display the available quizzes in the content div
         }
         navigation.push("list");
-        if (quizName != "") {
+        if (quizName != "" && session !="") {
             footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
 
         }else footer.innerHTML = "";
@@ -281,6 +289,7 @@ function getQuiz(quizNumber) {
     } else {
         quizSelected = quizzes[quizNumber];
         let thRequest = new XMLHttpRequest();
+        loadLoader();
         console.log("loading quiz " + quizNumber);
         thRequest.open("GET", START + PLAYER + playersName + AMP + APP + AMP +
             TREASURE_HUNT_ID + quizSelected.uuid, true);
@@ -312,7 +321,7 @@ function getQuiz(quizNumber) {
                     footer.innerHTML = thResponse.errorMessages;
                 }
             }
-        }
+        };
     }
 }
 
@@ -328,9 +337,11 @@ function nextQuestion() {
     nav();//places the back button, no matter the scenario
     console.log("Fetching question");
     let questionRequest = new XMLHttpRequest();
+    loadLoader();
     questionRequest.open("GET", QUESTION + SESSION + session,true);
     questionRequest.send();
     questionRequest.onload = function () {
+        content.innerHTML="";
         if (this.status == 200) {
             let questionResponse = JSON.parse(this.responseText);
             let totalQuestions = questionResponse.numOfQuestions;
@@ -444,10 +455,12 @@ function answer(type = "") {
     } else {
         usersA.push(usersAnswer); //the answer to be stored in object and array
         let answerRequest = new XMLHttpRequest();
+        loadLoader();
         answerRequest.open("GET", ANSWER + SESSION + session + AMP + ANSWER_P + usersAnswer, true);
         answerRequest.send();
         answerRequest.onload = function () {
             if (this.status == 200) {
+                content.innerHTML = "";
                 let answerResponse = JSON.parse(this.responseText);
                 console.log(answerResponse);
                 if (answerResponse.correct) {
@@ -478,7 +491,7 @@ function answer(type = "") {
                     footer.innerHTML = "<button onclick='nextQuestion()'>Try Again !</button>";
                 }
             }
-        }
+        };
     }
 }
 
@@ -498,6 +511,7 @@ function skip() {
     console.log(qPlayed);
 
     let skipRequest = new XMLHttpRequest();
+    loadLoader();
     skipRequest. open("GET",SKIP+SESSION+session, true);
     skipRequest.send();
     skipRequest.onload =function () {
