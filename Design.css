@@ -18,7 +18,9 @@
 }
 body{
     background-image:  url("images/37125686250_b18d3ac587_b.jpg");
-    background-size: contain;
+    background-size: 100% 100%;
+
+
 
 }
 #content{
@@ -112,8 +114,12 @@ body{
 }
 #dials{
     border: solid red 2px;
-    margin-right: 92.1%;
-
+    /*margin-right: 92.1%;*/
+    position: relative;
+    left: 40%;
+}
+#dials input{
+    margin: 1%;
 }
 #backButton{
     display:inline-block;

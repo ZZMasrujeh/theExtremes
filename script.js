@@ -215,8 +215,9 @@ function listAvailableQuizzes() {
         navigation.push("list");
         if (quizName != "" && session !="") {
             footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
-
-        }else footer.innerHTML = "";
+        }else {
+            footer.innerHTML = "";
+        }
     };
 }
 
@@ -380,8 +381,8 @@ function nextQuestion() {
                     header.innerHTML = "<p>Question "+currentQuestion+"/"+totalQuestions+":<br>"
                         + questionResponse.questionText + "</p>";   //eg. Question 1/5:
                     currentQ = questionResponse.questionText;   //to be saved in object and array
-                    //dials and textfield answerButton
                     if (questionResponse.questionType == "INTEGER" || questionResponse.questionType == "NUMERIC" ) {
+                        //dials and textfield answerButton
                         answerBox= "<div id='dials'><p>" +
                             "<input type='button' onclick='addToAnswerBox("+1+")' value='1'>" +
                             "<input type='button' onclick='addToAnswerBox("+2+")' value='2'>" +
@@ -394,7 +395,8 @@ function nextQuestion() {
                             "<input type='button' onclick='addToAnswerBox("+9+")' value='9'><br>"+
                             "<input type='button' onclick='addToAnswerBox(" +'"."'+ ")' value='.'>" +
                             "<input type='button' onclick='addToAnswerBox("+0+")' value='0'>" +
-                            "<input type='button' onclick='addToAnswerBox("+'"-"'+")' value='-'></p></div>" +
+                            "<input type='button' onclick='addToAnswerBox("+'"-"'+")' value='-'>" +
+                            "<input type='button' onclick='addToAnswerBox("+'"backspace"'+")' value='&#9003;' ></p></div>" +
                             "<p><input type='text' id='answerBox'></p>"+
                             "<p><button type='button' onclick='answer()'>Answer</button></p>";
                         //2 radio buttons and answerButton
@@ -574,7 +576,7 @@ function leaderboard(quizNumber) {
             // document.getElementById("leaderP").innerHTML = leaderboard;
             content.innerHTML = leaderboard;
         }
-    }
+    };
 }
 
 /**************************
@@ -609,6 +611,12 @@ function locationCallback(position) {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
  **************************************************************************/
 function addToAnswerBox(number){
+    if (number==="backspace") {
+        let string = "";
+        string  =document.getElementById("answerBox").value;
+        string = string.substr(0,string.length - 1);
+        document.getElementById("answerBox").value = string;
+    }else
     document.getElementById("answerBox").value += number;
 }
 
@@ -629,7 +637,6 @@ function displayPreviousAnswers() {
     }
     finalContent += "</div>";
     content.innerHTML = finalContent;
-
 }
 
 function leaderBoardEntry(i,object) {
@@ -641,7 +648,7 @@ function leaderBoardEntry(i,object) {
         "<td>"+formDate(compDate.getDate(),+compDate.getDay(),+compDate.getMonth(),+compDate.getFullYear(),
             compDate.getHours(),compDate.getMinutes(),compDate.getSeconds())+"</td>"+
         "</tr>";
-return entry;
+    return entry;
 }
 function formDate(date,day, month,year,hours, minutes,seconds) {
     let dateStr="";
@@ -668,7 +675,6 @@ function formDate(date,day, month,year,hours, minutes,seconds) {
             dateStr+="Saturday ";
             break
     }
-    // dateStr+=date+"/"+(month+1)
     dateStr += date + "/" + (month + 1)+"/" + year+", "+hours+":";
     if (minutes<10) dateStr += ":0"+ minutes +":"+ seconds;
     else  dateStr+=minutes+":"+seconds;
