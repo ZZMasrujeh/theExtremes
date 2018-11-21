@@ -548,6 +548,7 @@ function score() {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
  **************************************************************/
 function leaderboard(quizNumber) {
+    // document.getElementById("leaderButton").removeAttribute("onclick");
     let leaderRequest = new XMLHttpRequest();
     leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted&limit=5", true);
     leaderRequest.send();
@@ -558,14 +559,12 @@ function leaderboard(quizNumber) {
             console.log(obj);
             let arr = obj.leaderboard;
             let leaderboard = "<div id='leaderDiv'>";
-            for (let i = 0; i <arr.length; i++) {
-                let compDate = new Date(arr[i].completionTime);
-                leaderboard += arr[i].player + ", " + arr[i].score+" "+ compDate.toUTCString()+"<br>";
+            leaderboard+="<table><th>Rank</th><th>Player</th><th>Score</th><th>Completion Time</th>";
+            for (let i = 0; i <arr.length ; i++) {
+                leaderboard += leaderBoardEntry(i+1,arr[i]);
             }
-            leaderboard += "</div>";
-            document.getElementById("leaderP").innerHTML += leaderboard;
-            // content.innerHTML += leaderboard;
-            document.getElementById("leaderButton").removeAttribute("onclick");
+            leaderboard += "</div";
+            document.getElementById("leaderP").innerHTML = leaderboard;
         }
     }
 }
@@ -623,4 +622,44 @@ function displayPreviousAnswers() {
     finalContent += "</div>";
     content.innerHTML = finalContent;
 
+}
+
+function leaderBoardEntry(i,object) {
+    let compDate = new Date(object.completionTime);
+    let entry ="<tr>"+
+        "<td>"+i+"</td>"+
+        "<td>"+object.player+"</td>"+
+        "<td>"+object.score+"</td>"+
+        "<td>"+formDate(compDate.getDate(),+compDate.getDay(),+compDate.getMonth(),+compDate.getFullYear(),
+            compDate.getHours(),compDate.getMinutes(),compDate.getSeconds())+"</td>"+
+        "</tr>";
+return entry;
+}
+function formDate(date,day, month,year,hours, minutes,seconds) {
+    let dateStr="";
+    switch (day) {
+        case 0:
+            dateStr+="Sunday ";
+            break;
+        case 1:
+            dateStr+="Monday ";
+            break;
+        case 2:
+            dateStr+="Tuesday ";
+            break;
+        case 3:
+            dateStr+="Wednesday ";
+            break;
+        case 4:
+            dateStr+="Thursday ";
+            break;
+        case 5:
+            dateStr+="Friday ";
+            break ;
+        case 6:
+            dateStr+="Saturday ";
+            break
+    }
+    dateStr += date + "/" + (month + 1) + year+", "+hours+":"+minutes+":"+seconds;
+    return dateStr;
 }
