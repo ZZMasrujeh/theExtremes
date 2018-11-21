@@ -1,4 +1,4 @@
-.availableQuiz {
+.availableQuiz,#header,#content{
     text-align: center;
     color: black;
     background-color: darkgrey;
@@ -17,7 +17,8 @@
 
 }
 body{
-    background: #ebf5c4 url("images/wallpaper.jpg") left;
+    background-image:  url("images/37125686250_b18d3ac587_b.jpg");
+    background-size: contain;
 
 }
 #content{
@@ -35,8 +36,8 @@ body{
 #header{
     text-decoration-line: underline;
     text-align: center;
-    font-size: 15px;
-    color: black;
+    font-size: 35px;
+    color: white;
     font-weight: bold;
 
 }
@@ -45,6 +46,7 @@ body{
     font-size: 10px;
     color: black;
     font-weight: bold;
+
 
 }
 #leaderP{
@@ -65,7 +67,7 @@ body{
 
     text-align: center;
     position: relative;
-    left: 381px;
+    left: 24%;
 }
 #tHDetailsDiv{
     border: darkslategrey double 10px;
