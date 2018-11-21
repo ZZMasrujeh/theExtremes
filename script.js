@@ -127,6 +127,10 @@ function backAction() {
         case "question":
             showMore(quizSelected);
             break;
+        case "leaderboard":
+            showMore(quizzes.indexOf(quizSelected));
+            break;
+
     }
     navigation.pop();
     if (navigation.length <= 0) {
@@ -222,6 +226,7 @@ function listAvailableQuizzes() {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  *************************************************************************/
 function showMore(quizNumber) {  //more details about the selected quiz
+    quizSelected = quizzes[quizNumber];
     nav();
     header.innerHTML = quizzes[quizNumber].name;
     let htmlText;
@@ -548,9 +553,11 @@ function score() {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
  **************************************************************/
 function leaderboard(quizNumber) {
+    navigation.push("leaderboard");
+    nav();
     // document.getElementById("leaderButton").removeAttribute("onclick");
     let leaderRequest = new XMLHttpRequest();
-    leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted&limit=5", true);
+    leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted&limit=15", true);
     leaderRequest.send();
     leaderRequest.onload = function () {
         if (this.status == 200) {
@@ -564,7 +571,8 @@ function leaderboard(quizNumber) {
                 leaderboard += leaderBoardEntry(i+1,arr[i]);
             }
             leaderboard += "</div";
-            document.getElementById("leaderP").innerHTML = leaderboard;
+            // document.getElementById("leaderP").innerHTML = leaderboard;
+            content.innerHTML = leaderboard;
         }
     }
 }
@@ -660,6 +668,10 @@ function formDate(date,day, month,year,hours, minutes,seconds) {
             dateStr+="Saturday ";
             break
     }
-    dateStr += date + "/" + (month + 1) + year+", "+hours+":"+minutes+":"+seconds;
+    // dateStr+=date+"/"+(month+1)
+    dateStr += date + "/" + (month + 1)+"/" + year+", "+hours+":";
+    if (minutes<10) dateStr += ":0"+ minutes +":"+ seconds;
+    else  dateStr+=minutes+":"+seconds;
+
     return dateStr;
 }
