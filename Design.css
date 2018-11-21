@@ -1,4 +1,4 @@
-.availableQuiz,#header,#content {
+.availableQuiz {
     text-align: center;
     color: black;
     background-color: darkgrey;
@@ -17,8 +17,7 @@
 
 }
 body{
-    background-image:  url("37125686250_b18d3ac587_b.jpg");
-    background-size: contain;
+    background: #ebf5c4 url("images/wallpaper.jpg") left;
 
 }
 #content{
@@ -36,10 +35,9 @@ body{
 #header{
     text-decoration-line: underline;
     text-align: center;
-    font-size: 35px;
-    color: white;
+    font-size: 15px;
+    color: black;
     font-weight: bold;
-
 
 }
 #footer{
@@ -67,7 +65,7 @@ body{
 
     text-align: center;
     position: relative;
-    left: 30%;
+    left: 381px;
 }
 #tHDetailsDiv{
     border: darkslategrey double 10px;
