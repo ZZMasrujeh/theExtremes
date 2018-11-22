@@ -14,7 +14,7 @@ const LEADERBOARD = URL + "leaderboard?";
 const SCORE = URL + "score?";
 const LOCATION = URL + "location?";
 const LOCATION_INTERVAL = 60000; //location will be updated every minute
-
+const createdBy = "Created by theExtremes";
 /*********************************************************************************
  * Scenario 1: the page starts from the beggining, with no active Treasure Hunts *
  * *******************************************************************************
@@ -90,7 +90,7 @@ if (document.cookie!=""){   //cookie is not empty
          * start of Scenario 3 *
          * ********************/
         header.innerHTML = "Treasure Hunt Completed";
-        footer.innerHTML = "";
+        footer.innerHTML = createdBy;
         displayPreviousAnswers();
         deleteCookie(); /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
         refreshes more than once after the quiz has finished, he will end up here*/
@@ -100,7 +100,7 @@ if (document.cookie!=""){   //cookie is not empty
      * Start of scenario 1 *
      ***********************/
     listAvailableQuizzes();
-    footer.innerHTML = "";
+    footer.innerHTML = createdBy;
 }
 
 /************************************************************
@@ -216,7 +216,7 @@ function listAvailableQuizzes() {
         if (quizName != "" && session !="") {
             footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
         }else {
-            footer.innerHTML = "";
+            footer.innerHTML = createdBy;
         }
     };
 }
@@ -347,7 +347,6 @@ function nextQuestion() {
     questionRequest.open("GET", QUESTION + SESSION + session,true);
     questionRequest.send();
     questionRequest.onload = function () {
-        content.innerHTML="";
         if (this.status == 200) {
             let questionResponse = JSON.parse(this.responseText);
             let totalQuestions = questionResponse.numOfQuestions;
@@ -359,13 +358,12 @@ function nextQuestion() {
             }
             if (questionResponse.status == "OK") {
                 if (questionResponse.completed) {
-                    //leaderboard() with session ?
                     quizHasFinished = true;
                     /**************************************
                      *        Quiz has finished           *
                      *************************************/
                     //clear all
-                    header.innerHTML = "Congratulations " + playersName + " for completing the quiz<br>" +
+                    header.innerHTML = "Treasure hunt completed. Congratulations" + playersName+" <br>" +
                         "Your final score is "+scoreNumber+" points.";
                     session = "";
                     playersName = "";
@@ -374,16 +372,18 @@ function nextQuestion() {
                     deleteFromCookie("quizName");
                     deleteFromCookie("playersName");
                     answerBox = "";
-                    footer.innerHTML = "";
+                    footer.innerHTML = createdBy;
                     displayPreviousAnswers();
                     qPlayed = [];
                 } else {
                     header.innerHTML = "<p>Question "+currentQuestion+"/"+totalQuestions+":<br>"
-                        + questionResponse.questionText + "</p>";   //eg. Question 1/5:
+                        // + questionResponse.questionText
+                        +"</p>";   //eg. Question 1/5:
                     currentQ = questionResponse.questionText;   //to be saved in object and array
+                    answerBox= currentQ;
                     if (questionResponse.questionType == "INTEGER" || questionResponse.questionType == "NUMERIC" ) {
                         //dials and textfield answerButton
-                        answerBox= "<div id='dials'><p>" +
+                        answerBox+= "<div id='dials'><p>" +
                             "<input type='button' onclick='addToAnswerBox("+1+")' value='1'>" +
                             "<input type='button' onclick='addToAnswerBox("+2+")' value='2'>" +
                             "<input type='button' onclick='addToAnswerBox("+3+")' value='3'><br>"+
@@ -401,21 +401,21 @@ function nextQuestion() {
                             "<p><button type='button' onclick='answer()'>Answer</button></p>";
                         //2 radio buttons and answerButton
                     }else if(questionResponse.questionType=="BOOLEAN") {
-                        answerBox="<div id='radios'><p>"+
+                        answerBox+="<div id='radios'><p>"+
                             "<input class='radio' type='radio' name='boolean' value='true'>True<br>"+
                             "<input class='radio' type='radio' name='boolean' value='false'>False</p>"+
                             "<p><button type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p></div>";
                         //textfield and answerButton
                     }else if(questionResponse.questionType=="TEXT"){
-                        answerBox="<p><input type='text' id='answerBox'></p>"+
+                        answerBox+="<p><input type='text' id='answerBox'></p>"+
                             "<p><button type='button' onclick='answer()'>Answer</button></p>";
                         //4 radio buttons and answerButton
                     }else if (questionResponse.questionType == "MCQ") {
-                        answerBox="<div id='radios'><p>" +
-                            "<input class='radio' type='radio' name='boolean' value='a'>A<br>"+
-                            "<input class='radio' type='radio' name='boolean' value='b'>B<br>" +
-                            "<input class='radio' type='radio' name='boolean' value='c'>C<br>" +
-                            "<input class='radio' type='radio' name='boolean' value='d'>D<br>" +
+                        answerBox+="<div id='radios'><p style='display: inline'> " +
+                            "<input class='radio' type='radio' name='boolean' value='a'>A"+
+                            "<input class='radio' type='radio' name='boolean' value='b'>B" +
+                            "<input class='radio' type='radio' name='boolean' value='c'>C" +
+                            "<input class='radio' type='radio' name='boolean' value='d'>D" +
                             "</p></div>"+
                             "<p><button type='button' onclick='answer("+'"MCQ"'+")'>Answer</button></p>";
                     }
