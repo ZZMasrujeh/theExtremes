@@ -617,7 +617,7 @@ function addToAnswerBox(number){
         string = string.substr(0,string.length - 1);
         document.getElementById("answerBox").value = string;
     }else
-    document.getElementById("answerBox").value += number;
+        document.getElementById("answerBox").value += number;
 }
 
 /***************************************************************************************
