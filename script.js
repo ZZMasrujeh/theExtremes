@@ -58,7 +58,9 @@ var answersInCookieTime;    /* the final section with all the previous answers w
 var loader ="<div id = 'loader'></div>";
 
 function loadLoader() {
-    content.innerHTML = loader;
+    if (content.innerHTML != loader) {
+        content.innerHTML = loader;
+    }
 }
 
 //continuing from previous session
@@ -363,7 +365,7 @@ function nextQuestion() {
                      *        Quiz has finished           *
                      *************************************/
                     //clear all
-                    header.innerHTML = "Treasure hunt completed. Congratulations" + playersName+" <br>" +
+                    header.innerHTML = "Treasure hunt completed. Congratulations " + playersName+" <br>" +
                         "Your final score is "+scoreNumber+" points.";
                     session = "";
                     playersName = "";
@@ -518,8 +520,8 @@ function skip() {
     console.log(qPlayed);
 
     let skipRequest = new XMLHttpRequest();
-    loadLoader();
     skipRequest. open("GET",SKIP+SESSION+session, true);
+    loadLoader();
     skipRequest.send();
     skipRequest.onload =function () {
         let skipResponse =JSON.parse(skipRequest.responseText);
@@ -572,7 +574,7 @@ function leaderboard(quizNumber) {
             for (let i = 0; i <arr.length ; i++) {
                 leaderboard += leaderBoardEntry(i+1,arr[i]);
             }
-            leaderboard += "</div";
+            leaderboard += "</div>";
             // document.getElementById("leaderP").innerHTML = leaderboard;
             content.innerHTML = leaderboard;
         }
@@ -628,7 +630,8 @@ function displayPreviousAnswers() {
     let finalContent = "<div id='finished'>";
     for (let i = 0; i <qPlayed.length; i++) {
         let object = qPlayed[i];
-        finalContent+="<p>Question "+(i+1)+": "+object.q+"<br>"+"<ul>Your answers:";
+        if (object.a.length>1)  finalContent+="<p>Question "+(i+1)+": "+object.q+"<br>"+"<ul>Your answers:";
+        else finalContent+="<p>Question "+(i+1)+": "+object.q+"<br>"+"<ul>Your answer:";
         for (let j = 0; j <object.a.length ; j++) {
             let answers = object.a;
             finalContent += "<li>" + answers[j] + "</li>";
@@ -678,6 +681,5 @@ function formDate(date,day, month,year,hours, minutes,seconds) {
     dateStr += date + "/" + (month + 1)+"/" + year+", "+hours+":";
     if (minutes<10) dateStr += ":0"+ minutes +":"+ seconds;
     else  dateStr+=minutes+":"+seconds;
-
     return dateStr;
 }
