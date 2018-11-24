@@ -37,6 +37,10 @@ quizName        //<span>, the name of the quiz in each div ^, is a span element
 #resumeButton   //<button> resumes the active session
 
 #startButton    //<button> starts a selected th
+
+#skipButton
+
+#scoreDiv
 -->
 
 <!--th 0 name in response of /list is Sample Treasure Hunt-->
@@ -46,39 +50,24 @@ quizName        //<span>, the name of the quiz in each div ^, is a span element
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sample</title>
+    <title>Testing</title>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Design.css" type="text/css"/>
+    <style>
+        #testControls{
+            background-color: lightgoldenrodyellow;
+        }
+    </style>
 </head>
 <body>
-<div id="bg">
-<div id="header">
-
-    <form action="javascript:test()">
-        <input id="limitInput" type="number" placeholder="limit" min="1" max="50"/><br>
-        <input type="submit" placeholder="Start Test">
-    </form>
-</div>
+<div id="header"></div>
 <div id="content">
-    <div id="leaderDiv">
-        <table id="leaderboardTable">
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>Score</th>
-                <th>Completion Time</th>
-            </tr>
-        </table>
-    </div>
-</div>
 
-<div id="footer" >
-    <p>
-        footer<br>
-        footer<br>
-    </p>
+    <div id="loader"></div>
+    Nothing is loading, dont be fooled.
 </div>
-</div>
+<div id="footer" >Click something on the top and scroll down for more controls</div>
+<div id="testControls" ></div>
 <script src="test.js"></script>
 </body>
 

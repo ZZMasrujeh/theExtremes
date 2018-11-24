@@ -38,11 +38,20 @@ var header = document.getElementById("header");
 var content = document.getElementById("content");
 var footer = document.getElementById("footer");
 var navigation = [];    //will be used to hold the navigation of the users
+
 var buttonDiv = document.createElement("div");  //div of backButton, for navigation
 buttonDiv.id = "buttonDiv";
 buttonDivHTML = "<button id='backButton' onclick='backAction()'>Back</button>";
 
-var scoreNumber =0; //saving the score everytime it is updated, calling it when the hunt finishes
+var divInContent = document.createElement("div");
+divInContent.id = "divInContent";
+
+let bigDivInContent = document.createElement("div");
+bigDivInContent.id = "fDivInContent";
+
+var loader ="<div id = 'loader'></div>";
+
+var scoreNumber =0; //saving the score every time it is updated, no AJAX after the quiz is finished
 
 var quizHasFinished = false;    /*will be used to prevent /score from calling, otherwise the footer will show
 the score in the footer when the quiz will be finished*/
@@ -51,14 +60,17 @@ var qPlayed = [];    /*an array that will hold all previous questions and answer
 when the quiz finishes*/
 var qObject;    //will contain {q:"question, a[]:"answers"}
 var currentQ;   //the questions before it is saved
-var usersA=[];  //all the answers before the correct or skip
+var usersA=[];  //all the answers before and including the correct answer or skip
 var answersInCookieTime;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
-1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 will be forced*/
-
-var loader ="<div id = 'loader'></div>";
+1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 is forthcoming (if the app starts
+from scenario 3, everything is deleted so it will not start from there every time) */
 
 function loadLoader() {
-    if (content.innerHTML != loader) {
+    //attempting not to add another loader, because the spin will ne interrupted
+    if (content.innerHTML.includes("'loader'")) {
+        console.log("contains loader");
+    }else {
+        console.log("doesnt contain loader");
         content.innerHTML = loader;
     }
 }
@@ -91,10 +103,11 @@ if (document.cookie!=""){   //cookie is not empty
         /***********************
          * start of Scenario 3 *
          * ********************/
-        header.innerHTML = "Treasure Hunt Completed";
+        header.innerHTML = "Treasure Hunt over";
         footer.innerHTML = createdBy;
         displayPreviousAnswers();
-        deleteCookie(); /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
+        deleteCookie();
+        /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
         refreshes more than once after the quiz has finished, he will end up here*/
     }
 } else {
@@ -205,17 +218,21 @@ function listAvailableQuizzes() {
             quizzes = listResponse.treasureHunts;
             let htmlText = "";
             // htmlText= "<input id='nameInput' placeholder='Enter a name here'>";
-            header.innerHTML = "<p>Available Quizzes</p>";                            //change the "title"
+            header.innerHTML = "Available Quizzes";                            //change the "title"
             for (let i = 0; i < quizzes.length; i++) {
                 //check which quizzes are available and add them to the list
                 htmlText +=
                     "<div onclick='showMore("+i+")' class='availableQuiz'>" +
-                    "<p> <span class='quizzName'>" + quizzes[i].name + ".</span><br></p></div>";
+                    "<span class='quizzName'>" + quizzes[i].name + ".</span><br></div>";
             }
-            content.innerHTML = htmlText;    //display the available quizzes in the content div
+            // content.innerHTML = "";
+            // divInContent.innerHTML = htmlText;
+            // content.appendChild(divInContent);
+            //display the available quizzes in the content div
+            addHtmlAndAppend(content, divInContent, htmlText);
         }
         navigation.push("list");
-        if (quizName != "" && session !="") {
+        if (quizName != undefined && session !="") {
             footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
         }else {
             footer.innerHTML = createdBy;
@@ -234,7 +251,6 @@ function showMore(quizNumber) {  //more details about the selected quiz
     header.innerHTML = quizzes[quizNumber].name;
     let htmlText;
     htmlText = "<div id='tHDetailsDiv'>" +
-        "<p>"+
         "Description: " + quizzes[quizNumber].description+"<br>";   //description
     if (quizzes[quizNumber].maxDuration/1000/60> 0){
         htmlText += "Duration: " + (quizzes[quizNumber].maxDuration / 60 / 1000) + " minutes<br>";  //duration
@@ -254,7 +270,7 @@ function showMore(quizNumber) {  //more details about the selected quiz
     } else {
         htmlText+="The questions appear in the same order<br>";
     }
-    htmlText += "by: " + quizzes[quizNumber].ownerEmail + "<br><br></div>" ;
+    htmlText += "by: " + quizzes[quizNumber].ownerEmail + "<br></div>" ;
     console.log(session);
 
     quizName = quizzes[quizNumber].name;/*this is necessary, otherwise ->  if(quizName != quizzes[quizNumber].name)
@@ -264,23 +280,24 @@ function showMore(quizNumber) {  //more details about the selected quiz
         // In case the page is closed and reopened: checks if there is a stored session
         if (quizName != quizzes[quizNumber].name) {  /*if a different quiz from the one that is active, is selected
         from the list*/
-            htmlText += "<p>You have another running quiz. Finish that one first !</p>";/*warning for
+            htmlText += "You have another running quiz. Finish that one first !";/*warning for
             the bad selection */
-            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume other quiz</button> ";
+            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume other treasure hunt</button><br> ";
         }else {    //if the same, running, quiz is selected from the list
-            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume quiz</button> ";
+            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume treasure hunt</button><br> ";
         }
     }else { //no running quiz
         htmlText+= "<input id='nameInput' placeholder='Enter a name here'> <br>" +      //textfield for name
             "<button class='button' id='startButton' onclick='getQuiz(" + quizNumber + ")'>Start</button><br>" ;
         //button to start
     }
-    htmlText+="<p id='leaderP'><button onclick='leaderboard(" +quizNumber+
-        ")' id='leaderButton'>Leaderboard</button></p></p>";
-    content.innerHTML = htmlText;
-    /****
-     * I should do something else to show the leaderboard
-     */
+    htmlText+="<button onclick='leaderboard(" +quizNumber+
+        ")' id='leaderButton'>Leaderboard</button>";
+
+    // content.innerHTML = "";
+    // bigDivInContent.innerHTML = htmlText;
+    // content.appendChild(bigDivInContent);
+    addHtmlAndAppend(content, bigDivInContent, htmlText);
 }
 
 /*********************************************************************
@@ -339,13 +356,13 @@ function getQuiz(quizNumber) {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
  ******************************************************************************************/
 function nextQuestion() {
+    loadLoader();
     if (navigation.length == 0) {   //In the scenario 2 the navigation starts empty. pushing the 'list' will provide
         navigation.push("list");    //the user with something to navigate out of the question.
     }
     nav();//places the back button, no matter the scenario
     console.log("Fetching question");
     let questionRequest = new XMLHttpRequest();
-    loadLoader();
     questionRequest.open("GET", QUESTION + SESSION + session,true);
     questionRequest.send();
     questionRequest.onload = function () {
@@ -353,7 +370,7 @@ function nextQuestion() {
             let questionResponse = JSON.parse(this.responseText);
             let totalQuestions = questionResponse.numOfQuestions;
             let currentQuestion = questionResponse.currentQuestionIndex + 1;
-            console.log("question fetched. displaying...");
+            console.log("question response");
             console.log(questionResponse);
             if (questionRequest.requiresLocation) {
                 getLocation();
@@ -365,8 +382,7 @@ function nextQuestion() {
                      *        Quiz has finished           *
                      *************************************/
                     //clear all
-                    header.innerHTML = "Treasure hunt completed. Congratulations " + playersName+" <br>" +
-                        "Your final score is "+scoreNumber+" points.";
+                    header.innerHTML = "Treasure hunt over.";
                     session = "";
                     playersName = "";
                     quizName = "";
@@ -375,66 +391,41 @@ function nextQuestion() {
                     deleteFromCookie("playersName");
                     answerBox = "";
                     footer.innerHTML = createdBy;
-                    displayPreviousAnswers();
+                    let message =  "Congratulations " + playersName+" <br>" +
+                        "Your final score is "+scoreNumber+" points.";
+                    displayPreviousAnswers(message);
                     qPlayed = [];
                 } else {
-                    header.innerHTML = "<p>Question "+currentQuestion+"/"+totalQuestions+":<br>"
-                        // + questionResponse.questionText
-                        +"</p>";   //eg. Question 1/5:
+                    header.innerHTML = "Question "+currentQuestion+"/"+totalQuestions+":<br>";   //eg. Question 1/5:
                     currentQ = questionResponse.questionText;   //to be saved in object and array
                     answerBox= currentQ;
-                    if (questionResponse.questionType == "INTEGER" || questionResponse.questionType == "NUMERIC" ) {
-                        //dials and textfield answerButton
-                        answerBox+= "<div id='dials'><p>" +
-                            "<input type='button' onclick='addToAnswerBox("+1+")' value='1'>" +
-                            "<input type='button' onclick='addToAnswerBox("+2+")' value='2'>" +
-                            "<input type='button' onclick='addToAnswerBox("+3+")' value='3'><br>"+
-                            "<input type='button' onclick='addToAnswerBox("+4+")' value='4'>" +
-                            "<input type='button' onclick='addToAnswerBox("+5+")'value='5'>" +
-                            "<input type='button' onclick='addToAnswerBox("+6+")' value='6'><br>"+
-                            "<input type='button' onclick='addToAnswerBox("+7+")' value='7'>" +
-                            "<input type='button' onclick='addToAnswerBox("+8+")' value='8'>" +
-                            "<input type='button' onclick='addToAnswerBox("+9+")' value='9'><br>"+
-                            "<input type='button' onclick='addToAnswerBox(" +'"."'+ ")' value='.'>" +
-                            "<input type='button' onclick='addToAnswerBox("+0+")' value='0'>" +
-                            "<input type='button' onclick='addToAnswerBox("+'"-"'+")' value='-'>" +
-                            "<input type='button' onclick='addToAnswerBox("+'"backspace"'+")' value='&#9003;' ></p></div>" +
-                            "<p><input type='text' id='answerBox'></p>"+
-                            "<p><button type='button' onclick='answer()'>Answer</button></p>";
-                        //2 radio buttons and answerButton
-                    }else if(questionResponse.questionType=="BOOLEAN") {
-                        answerBox+="<div id='radios'><p>"+
-                            "<input class='radio' type='radio' name='boolean' value='true'>True<br>"+
-                            "<input class='radio' type='radio' name='boolean' value='false'>False</p>"+
-                            "<p><button type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p></div>";
-                        //textfield and answerButton
-                    }else if(questionResponse.questionType=="TEXT"){
-                        answerBox+="<p><input type='text' id='answerBox'></p>"+
-                            "<p><button type='button' onclick='answer()'>Answer</button></p>";
-                        //4 radio buttons and answerButton
-                    }else if (questionResponse.questionType == "MCQ") {
-                        answerBox+="<div id='radios'><p style='display: inline'> " +
-                            "<input class='radio' type='radio' name='boolean' value='a'>A"+
-                            "<input class='radio' type='radio' name='boolean' value='b'>B" +
-                            "<input class='radio' type='radio' name='boolean' value='c'>C" +
-                            "<input class='radio' type='radio' name='boolean' value='d'>D" +
-                            "</p></div>"+
-                            "<p><button type='button' onclick='answer("+'"MCQ"'+")'>Answer</button></p>";
-                    }
-                    content.innerHTML = answerBox;
+                    createAnswerBox(questionResponse.questionType);
                     //adding the skip button or letting the user know that this question cannot be skipped
+                    // content.innerHTML = "";
+                    // divInContent.innerHTML = answerBox;
+                    // content.appendChild(divInContent);
+                    addHtmlAndAppend(content, divInContent, answerBox);
                     if (questionResponse.canBeSkipped) {
-                        footer.innerHTML = "<button onClick='skip()'>Skip</button>";
+                        divInContent.innerHTML += "<button id='skipButton' onClick='skip()'>Skip</button>";
+                        footer.innerHTML = createdBy;
                     } else {
                         footer.innerHTML = "<span>This question cannot be skipped</span>";
                     }
+                }
+            }else {
+                if (qPlayed.length==0) {
+                    // divInContent.innerHTML = questionResponse.errorMessages[0];
+                    // content.innerHTML = "";
+                    // content.appendChild(divInContent);
+                    addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
+                }else {
+                    displayPreviousAnswers();
                 }
             }
         }
         score();
     }
 }
-
 /******************************************************************************************************
  *checks if the user has answered, if the answer is correct, stores all answers given by the user and *
  * calls /answer                                                                                      *
@@ -459,17 +450,16 @@ function answer(type = "") {
     }
 
     if (!userHasAnswered) { //in case there is nothing selected or typed
-        content.innerHTML = "<p>An empty response is not an answer !</p>";
-        footer.innerHTML = "<button onclick='nextQuestion()'>Try Again !</button>";
+        divInContent.innerHTML += "<button onclick='nextQuestion()'>Try Again !</button>";
+        footer.innerHTML = "An empty response is not an answer !";
     } else {
         usersA.push(usersAnswer); //the answer to be stored in object and array
         let answerRequest = new XMLHttpRequest();
-        loadLoader();
         answerRequest.open("GET", ANSWER + SESSION + session + AMP + ANSWER_P + usersAnswer, true);
+        loadLoader();
         answerRequest.send();
         answerRequest.onload = function () {
             if (this.status == 200) {
-                content.innerHTML = "";
                 let answerResponse = JSON.parse(this.responseText);
                 console.log(answerResponse);
                 if (answerResponse.correct) {
@@ -477,8 +467,11 @@ function answer(type = "") {
                      *              Correct                  *
                      ****************************************/
                     answerBox = "";
-                    content.innerHTML = "<p>Correct !</p>";
-                    footer.innerHTML = "<button onclick='nextQuestion()'>Proceed</button>";
+                    // content.innerHTML = "";
+                    // divInContent.innerHTML = "Correct<br>";
+                    // content.appendChild(divInContent);
+                    addHtmlAndAppend(content, divInContent, "Correct<br>");
+                    divInContent.innerHTML += "<button onclick='nextQuestion()'>Proceed</button>";
                     /* if the answer is correct, everything is saved and a proceed button will appear*/
                     qObject = {"q": currentQ, "a": usersA};
                     qPlayed.push(qObject);
@@ -489,15 +482,21 @@ function answer(type = "") {
                 } else {
                     if (answerResponse.message.includes("location")) {
                         // for location sensitive answers
-                        content.innerHTML = "<p>You must be near the location mentioned in the question</p>";
+                        // content.innerHTML = "";
+                        // divInContent.innerHTML = "You must be near the location mentioned in the question.<br>";
+                        // content.appendChild(divInContent);
+                        addHtmlAndAppend(content, divInContent, "You must be near the location mentioned in the question.<br>");
                     } else {
                         /*****************************************
                          *              Inorrect                 *
                          ****************************************/
-                        content.innerHTML = "<p>Incorrect.</p>";
+                        // content.innerHTML = "";
+                        // divInContent.innerHTML = "Incorrect.<br>";
+                        // content.appendChild(divInContent);
+                        addHtmlAndAppend(content, divInContent, "Incorrect.<br>");
                     }
                     answerBox = "";
-                    footer.innerHTML = "<button onclick='nextQuestion()'>Try Again !</button>";
+                    divInContent.innerHTML += "<button onclick='nextQuestion()'>Try Again !</button>";
                 }
             }
         };
@@ -544,7 +543,7 @@ function score() {
             console.log("Response of Score");
             console.log(scoreResponse);
             if (!quizHasFinished && scoreResponse.score != undefined) {
-                footer.innerHTML += "<div><p>Score: " + scoreResponse.score + "</p></div>  ";
+                divInContent.innerHTML += "<div id='scoreDiv'>Score: " + scoreResponse.score + "</div>  ";
             }
             scoreNumber = scoreResponse.score;
         }
@@ -561,7 +560,7 @@ function leaderboard(quizNumber) {
     nav();
     // document.getElementById("leaderButton").removeAttribute("onclick");
     let leaderRequest = new XMLHttpRequest();
-    leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted&limit=15", true);
+    leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted", true);
     leaderRequest.send();
     leaderRequest.onload = function () {
         if (this.status == 200) {
@@ -570,13 +569,16 @@ function leaderboard(quizNumber) {
             console.log(obj);
             let arr = obj.leaderboard;
             let leaderboard = "<div id='leaderDiv'>";
-            leaderboard+="<table><th>Rank</th><th>Player</th><th>Score</th><th>Completion Time</th>";
+            leaderboard+="<ul>";
             for (let i = 0; i <arr.length ; i++) {
                 leaderboard += leaderBoardEntry(i+1,arr[i]);
             }
-            leaderboard += "</div>";
+            leaderboard += "</ul></div>";
             // document.getElementById("leaderP").innerHTML = leaderboard;
-            content.innerHTML = leaderboard;
+            // content.innerHTML = "";
+            // bigDivInContent.innerHTML = leaderboard;
+            // content.appendChild(bigDivInContent);
+            addHtmlAndAppend(content, bigDivInContent, leaderboard);
         }
     };
 }
@@ -626,12 +628,12 @@ function addToAnswerBox(number){
  * Goes through the array that contains all previous Q and A and adds the to content   *
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  **************************************************************************************/
-function displayPreviousAnswers() {
+function displayPreviousAnswers(message="") {
     let finalContent = "<div id='finished'>";
     for (let i = 0; i <qPlayed.length; i++) {
         let object = qPlayed[i];
-        if (object.a.length>1)  finalContent+="<p>Question "+(i+1)+": "+object.q+"<br>"+"<ul>Your answers:";
-        else finalContent+="<p>Question "+(i+1)+": "+object.q+"<br>"+"<ul>Your answer:";
+        if (object.a.length>1)  finalContent+="<p><u>Question "+(i+1)+":</u><br> "+object.q+"<br><br>"+"Your answers:<ul>";
+        else finalContent+="<p><u>Question "+(i+1)+":</u> <br>"+object.q+"<br><br>"+"Your answer:<ul>";
         for (let j = 0; j <object.a.length ; j++) {
             let answers = object.a;
             finalContent += "<li>" + answers[j] + "</li>";
@@ -639,18 +641,21 @@ function displayPreviousAnswers() {
         finalContent += "</ul></p>";
     }
     finalContent += "</div>";
-    content.innerHTML = finalContent;
+    // content.innerHTML = "";
+    // bigDivInContent.innerHTML = finalContent;
+    // content.appendChild(bigDivInContent);
+    addHtmlAndAppend(content, bigDivInContent, finalContent);
 }
 
 function leaderBoardEntry(i,object) {
     let compDate = new Date(object.completionTime);
-    let entry ="<tr>"+
-        "<td>"+i+"</td>"+
-        "<td>"+object.player+"</td>"+
-        "<td>"+object.score+"</td>"+
-        "<td>"+formDate(compDate.getDate(),+compDate.getDay(),+compDate.getMonth(),+compDate.getFullYear(),
-            compDate.getHours(),compDate.getMinutes(),compDate.getSeconds())+"</td>"+
-        "</tr>";
+    let entry ="<li>"+
+        "<strong>"+i+"</strong> "+
+        "<i>"+object.player+"</i> "+
+        "<strong>"+object.score+"</strong> "+
+        "<small>"+formDate(compDate.getDate(),+compDate.getDay(),+compDate.getMonth(),+compDate.getFullYear(),
+            compDate.getHours(),compDate.getMinutes(),compDate.getSeconds())+"</small>"+
+        "</li>";
     return entry;
 }
 function formDate(date,day, month,year,hours, minutes,seconds) {
@@ -682,4 +687,38 @@ function formDate(date,day, month,year,hours, minutes,seconds) {
     if (minutes<10) dateStr += ":0"+ minutes +":"+ seconds;
     else  dateStr+=minutes+":"+seconds;
     return dateStr;
+}
+function createAnswerBox(type) {
+    if (type == "INTEGER" || type == "NUMERIC" ) {
+        //dials and textfield answerButton
+        answerBox+= "<div id='dials'><p>" +
+            "<p><input type='number' id='answerBox'></p>"+
+            "<p><button id='answerButton' type='button' onclick='answer()'>Answer</button></p>";
+        //2 radio buttons and answerButton
+    }else if(type=="BOOLEAN") {
+        answerBox+="<div id='radios'><p>"+
+            "<input class='radio' type='radio' name='boolean' value='true'>True<br>"+
+            "<input class='radio' type='radio' name='boolean' value='false'>False</p>"+
+            "<p><button id='answerButton' type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p></div>";
+        //textfield and answerButton
+    }else if(type=="TEXT"){
+        answerBox+="<p><input type='text' placeholder=' Your answer goes here' id='answerBox'></p>"+
+            "<p><button id='answerButton' type='button' onclick='answer()'>Answer</button></p>";
+        //4 radio buttons and answerButton
+    }else if (type == "MCQ") {
+        answerBox+="<div id='radios'><p style='display: inline'><br> " +
+            "<input class='radio' type='radio' name='boolean' value='a'>A"+
+            "<input class='radio' type='radio' name='boolean' value='b'>B" +
+            "<input class='radio' type='radio' name='boolean' value='c'>C" +
+            "<input class='radio' type='radio' name='boolean' value='d'>D" +
+            "</p></div>"+
+            "<p><button id='answerButton' type='button' onclick='answer(" + '"MCQ"' + ")'>Answer</button></p>";
+    }
+}
+
+function addHtmlAndAppend(parent, child, html){
+    parent.innerHTML = "";
+    child.innerHTML = html;
+    parent.appendChild(child);
+
 }
