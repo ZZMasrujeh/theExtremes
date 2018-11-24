@@ -1,0 +1,109 @@
+html,body{
+    font-size: 1.3em;
+    height: 100%;
+}
+body{
+    padding: 0 2%;
+    background:black url("images/37125686250_b18d3ac587_b.jpg") ;
+    /*background: black no-repeat;*/
+    background-size: 100%;
+}
+#header,#content,#footer {
+    opacity: 0;
+    /*margin: 5% 3%;*/
+    position: absolute;
+    border: solid 2pt red;
+    padding: 3%;
+    width: 85%;
+    background: #ffffff;
+    background-blend-mode: hue;
+    text-align: center;
+    animation:fadeIn  1.5s 1 forwards linear  ;
+}
+#testControls{
+    position: absolute;
+    top: 100%;
+}
+#header{
+    top: 6.5%;
+    min-height: 8%;
+    max-height: 8%;
+    border-radius: 20pt 20pt 5pt 5pt;
+    overflow: auto;
+}
+#content {
+    font-size: 1em;
+    top: 21%;
+    height: 58%;
+    border-radius: 5pt;
+    overflow: auto;
+}
+#footer{
+    font-size: 0.7em;
+    top: 85%;
+    min-height: 8%;
+    max-height: 8%;
+    border-radius: 5pt 5pt 20pt 20pt;
+    overflow: auto;
+}
+
+@keyframes fadeIn  {
+    0%{opacity: 0}
+    100%{opacity: 1}
+}
+
+#loader {
+    border: 35px solid #f3f3f3;
+    border-top: 35px solid #3498db;
+    border-radius: 50%;
+    width: 180px;
+    height: 180px;
+    animation: spin 1s linear infinite;
+}
+#divInContent{
+    position: relative;
+    top: 50%;
+    transform: translate(0,-50%);
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg);
+    }
+}
+#backButton{
+    float: right;
+}
+#skipButton{
+    float: left;
+}
+#scoreDiv{
+    clear: both;
+}
+#answerButton{
+    float: right;
+}
+
+.availableQuiz{
+    border: solid 1pt black;
+    border-radius: 10pt;
+    margin-top: 2%;
+    padding: 1%;
+}
+#finished{
+    text-align: left;
+}
+#bigDivInContent{
+    width: 99%;
+    contain: content;
+}
+#leaderDiv ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#leaderDiv li{
+    border: 1pt solid black;
+    margin-bottom: 5%;
+}
+
+
