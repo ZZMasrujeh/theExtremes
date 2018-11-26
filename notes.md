@@ -3,7 +3,7 @@ Team 3:
 •	Konstantinos – will handle marketing and some CSS.
 •	Zacharias – will work on everything related to javascript.
 
-Meetings
+MEETINGS
 Week 1 (17/10)
 Attendance: Andreas, Konstantinos, Zacharias
 This is the day the team was formed and the github repository was created, as part of the worksheet, in CO1111, for that day. We also identified each other’s strengths and weaknesses and divided the project into parts for everyone to work on. Finally, a general outline of what we wanted to achieve was discussed.
