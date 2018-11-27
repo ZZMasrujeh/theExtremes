@@ -5,10 +5,10 @@
     border: double red 8px;
     font-size: 15px;
 }
-.description {
-    color: blue;
-    text-decoration-line: underline;
-}
+ /*.description {*/
+    /*color: blue;*/
+    /*text-decoration-line: underline;*/
+/*}*/
 .quizzName {
     color: black;
     border: solid;
@@ -17,8 +17,8 @@
 
 }
 body{
-    background-image:  url("images/37125686250_b18d3ac587_b.jpg");
-    background-size: contain;
+    background: url("images/37125686250_b18d3ac587_b.jpg") no-repeat;
+    background-size: 100% 100%;
 
 }
 #content{
@@ -72,15 +72,7 @@ body{
 #tHDetailsDiv{
     border: darkslategrey double 10px;
 }
-#details{
-    text-align: center;
-    font-size: 10px;
-    border-radius: 50px;
-    background: darkslategrey;
-    margin-left: 900px;
-    padding: 10px;
-    color: #ebf5c4;
-}
+
 
 #startButton{
     display:inline-block;
@@ -112,7 +104,7 @@ body{
 }
 #dials{
     border: solid red 2px;
-    margin-right: 92.1%;
+    margin-right: 91.1%;
 
 }
 #backButton{
