@@ -105,5 +105,11 @@ body{
     border: 1pt solid black;
     margin-bottom: 5%;
 }
+#homeButton{
+    float: left;
+}
+#skipButton{
+    float: left;
+}
 
 
