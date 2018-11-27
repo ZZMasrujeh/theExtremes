@@ -39,9 +39,9 @@ var content = document.getElementById("content");
 var footer = document.getElementById("footer");
 var navigation = [];    //will be used to hold the navigation of the users
 
-var buttonDiv = document.createElement("div");  //div of backButton, for navigation
-buttonDiv.id = "buttonDiv";
-buttonDivHTML = "<button id='backButton' onclick='backAction()'>Back</button>";
+
+var backButton = document.getElementById("backButton");
+backButton.style.display = "none";
 
 var divInContent = document.createElement("div");
 divInContent.id = "divInContent";
@@ -61,13 +61,13 @@ when the quiz finishes*/
 var qObject;    //will contain {q:"question, a[]:"answers"}
 var currentQ;   //the questions before it is saved
 var usersA=[];  //all the answers before and including the correct answer or skip
-var answersInCookieTime;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
+var answersInCookieTime = 180000;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
 1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 is forthcoming (if the app starts
 from scenario 3, everything is deleted so it will not start from there every time) */
 
 function loadLoader() {
     //attempting not to add another loader, because the spin will ne interrupted
-    if (content.innerHTML.includes("'loader'")) {
+    if ( document.getElementById("loader") != null ) {
         console.log("contains loader");
     }else {
         console.log("doesnt contain loader");
@@ -76,7 +76,7 @@ function loadLoader() {
 }
 
 //continuing from previous session
-if (document.cookie!=""){   //cookie is not empty
+if (document.cookie!==""){   //cookie is not empty
     /***********************
      * Start of scenario 2 *
      ***********************/
@@ -85,7 +85,7 @@ if (document.cookie!=""){   //cookie is not empty
     session = readFromCookie("session");
     quizName = readFromCookie("quizName");
     playersName = readFromCookie("playersName");
-    if (readFromCookie("qPlayed") == undefined) {   /*in case something goes wrong and the previous questions
+    if (readFromCookie("qPlayed") === undefined) {   /*in case something goes wrong and the previous questions
     are not saved, the array will be initialized empty, probably nobody will notice that there are missing
     questions. I wouldn't ! */
         console.log("Previous q&a restarted");
@@ -99,7 +99,7 @@ if (document.cookie!=""){   //cookie is not empty
     setInterval(getLocation,LOCATION_INTERVAL );    //repeated location calls
     nextQuestion(); //will take the player to the last unanswered question, if there is one
 
-    if (session == undefined && qPlayed != undefined && qPlayed.length > 0) {
+    if (session === undefined && qPlayed !== undefined && qPlayed.length > 0) {
         /***********************
          * start of Scenario 3 *
          * ********************/
@@ -125,8 +125,9 @@ if (document.cookie!=""){   //cookie is not empty
  ***********************************************************/
 function nav() {
     if (navigation.length > 0) {
-        buttonDiv.innerHTML=buttonDivHTML;
-        document.body.appendChild(buttonDiv);
+        // buttonDiv.innerHTML=buttonDivHTML;
+        // document.body.appendChild(buttonDiv);
+        backButton.style.display = "block";
     }
 }
 
@@ -149,7 +150,7 @@ function backAction() {
     }
     navigation.pop();
     if (navigation.length <= 0) {
-        buttonDiv.innerHTML = "";
+        backButton.style.display = "none";
     }
 }
 
@@ -170,7 +171,7 @@ function readFromCookie(property) {
     for (let i = 0; i < kv.length; i++) {
         let key = kv[i].split("=")[0].trim();
         let val = kv[i].split("=")[1];
-        if (property==key) return val;
+        if (property===key) return val;
     }
 }
 function deleteCookie() {
@@ -188,7 +189,7 @@ function deleteFromCookie(property) {
     let kv = document.cookie.split(";");
     for (let i = 0; i < kv.length; i++) {
         let key = kv[i].split("=")[0].trim();
-        if (key==property)        {
+        if (key===property)        {
             document.cookie = key + "=;" + expString;
             break;
         }
@@ -211,7 +212,7 @@ function listAvailableQuizzes() {
     listRequest.open("GET", LIST, true);
     listRequest.send();
     listRequest.onload = function () {
-        if (this.status == 200) {
+        if (this.status === 200) {
             let listResponse = JSON.parse(this.responseText);
             console.log("Response of /list: ");
             console.log(listResponse);
@@ -232,7 +233,7 @@ function listAvailableQuizzes() {
             addHtmlAndAppend(content, divInContent, htmlText);
         }
         navigation.push("list");
-        if (quizName != undefined && session !="") {
+        if (quizName !== undefined && session !=="") {
             footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
         }else {
             footer.innerHTML = createdBy;
@@ -251,15 +252,15 @@ function showMore(quizNumber) {  //more details about the selected quiz
     header.innerHTML = quizzes[quizNumber].name;
     let htmlText;
     htmlText = "<div id='tHDetailsDiv'>" +
-        "Description: " + quizzes[quizNumber].description+"<br>";   //description
+        "<u>Description:</u> " + quizzes[quizNumber].description+"<br>";   //description
     if (quizzes[quizNumber].maxDuration/1000/60> 0){
-        htmlText += "Duration: " + (quizzes[quizNumber].maxDuration / 60 / 1000) + " minutes<br>";  //duration
+        htmlText += "<u>Duration:</u>" + (quizzes[quizNumber].maxDuration / 60 / 1000) + " minutes<br>";  //duration
     } else {
-        htmlText +="Duration: Unlimited<br>";
+        htmlText +="<u>Duration:</u> Unlimited<br>";
     }
     htmlText+=
-        "Starts on: "+ (new Date(quizzes[quizNumber].startsOn).toUTCString())+"<br>"+ //start
-        "Ends on: "+(new Date(quizzes[quizNumber].endsOn).toUTCString())+"<br>";        //end
+        "<u>Starts on:</u> "+ (new Date(quizzes[quizNumber].startsOn).toUTCString())+"<br>"+ //start
+        "<u>Ends on:</u> "+(new Date(quizzes[quizNumber].endsOn).toUTCString())+"<br><br>";        //end
     if (quizzes[quizNumber].hasPrize){
         htmlText+="With Prize<br>";                                                     //prize
     } else {
@@ -270,15 +271,15 @@ function showMore(quizNumber) {  //more details about the selected quiz
     } else {
         htmlText+="The questions appear in the same order<br>";
     }
-    htmlText += "by: " + quizzes[quizNumber].ownerEmail + "<br></div>" ;
+    htmlText += "<br>by: " + quizzes[quizNumber].ownerEmail + "</div><br>" ;
     console.log(session);
 
     quizName = quizzes[quizNumber].name;/*this is necessary, otherwise ->  if(quizName != quizzes[quizNumber].name)
     wont work, the same is assigned again in later, but it will be necessary for scenario 2*/
 
-    if (session != "") { // already running a quiz.
+    if (session !== "") { // already running a quiz.
         // In case the page is closed and reopened: checks if there is a stored session
-        if (quizName != quizzes[quizNumber].name) {  /*if a different quiz from the one that is active, is selected
+        if (quizName !== quizzes[quizNumber].name) {  /*if a different quiz from the one that is active, is selected
         from the list*/
             htmlText += "You have another running quiz. Finish that one first !";/*warning for
             the bad selection */
@@ -309,7 +310,7 @@ function showMore(quizNumber) {  //more details about the selected quiz
 function getQuiz(quizNumber) {
     playersName = document.getElementById("nameInput").value;
     console.log("NAME: "+playersName);
-    if (playersName == "") {    //check if the users has entered something as name
+    if (playersName === "") {    //check if the users has entered something as name
         footer.innerHTML = "You must enter a name first";
     } else {
         quizSelected = quizzes[quizNumber];
@@ -320,17 +321,17 @@ function getQuiz(quizNumber) {
             TREASURE_HUNT_ID + quizSelected.uuid, true);
         thRequest.send();
         thRequest.onload = function () {
-            if (this.status == 200) {
+            if (this.status === 200) {
                 let thResponse = JSON.parse(this.responseText);
                 console.log("Response of /start: ");
                 console.log(thResponse);
-                if (thResponse.status != "ERROR") {
+                if (thResponse.status !== "ERROR") {
                     console.log(JSON.stringify(thResponse));
                     /*************************
                      * QUIZ HAS STARTED
                      ************************/
-                    answersInCookieTime = quizSelected.endsOn + 180000;  //time for the user's answers array
-                    /*session, quizname and players name will be saved as long as the th lasts, in terms of
+                    answersInCookieTime += quizSelected.endsOn;  //time for the user's answers array
+                    /*session, treasure hunt's name and players name will be saved as long as the th lasts, in terms of
                     time and completion
                      */
                     saveInCookie("session", thResponse.session, quizSelected.endsOn);
@@ -357,7 +358,7 @@ function getQuiz(quizNumber) {
  ******************************************************************************************/
 function nextQuestion() {
     loadLoader();
-    if (navigation.length == 0) {   //In the scenario 2 the navigation starts empty. pushing the 'list' will provide
+    if (navigation.length === 0) {   //In the scenario 2 the navigation starts empty. pushing the 'list' will provide
         navigation.push("list");    //the user with something to navigate out of the question.
     }
     nav();//places the back button, no matter the scenario
@@ -366,7 +367,7 @@ function nextQuestion() {
     questionRequest.open("GET", QUESTION + SESSION + session,true);
     questionRequest.send();
     questionRequest.onload = function () {
-        if (this.status == 200) {
+        if (this.status === 200) {
             let questionResponse = JSON.parse(this.responseText);
             let totalQuestions = questionResponse.numOfQuestions;
             let currentQuestion = questionResponse.currentQuestionIndex + 1;
@@ -375,7 +376,7 @@ function nextQuestion() {
             if (questionRequest.requiresLocation) {
                 getLocation();
             }
-            if (questionResponse.status == "OK") {
+            if (questionResponse.status === "OK") {
                 if (questionResponse.completed) {
                     quizHasFinished = true;
                     /**************************************
@@ -400,23 +401,20 @@ function nextQuestion() {
                     currentQ = questionResponse.questionText;   //to be saved in object and array
                     answerBox= currentQ;
                     createAnswerBox(questionResponse.questionType);
-                    //adding the skip button or letting the user know that this question cannot be skipped
-                    // content.innerHTML = "";
-                    // divInContent.innerHTML = answerBox;
-                    // content.appendChild(divInContent);
                     addHtmlAndAppend(content, divInContent, answerBox);
+                    //adding the skip button or letting the user know that this question cannot be skipped
                     if (questionResponse.canBeSkipped) {
                         divInContent.innerHTML += "<button id='skipButton' onClick='skip()'>Skip</button>";
                         footer.innerHTML = createdBy;
                     } else {
                         footer.innerHTML = "<span>This question cannot be skipped</span>";
                     }
+                    if (questionResponse.requiresLocation) {
+                        footer.innerHTML = "You must be near the location to answer";
+                    }
                 }
             }else {
-                if (qPlayed.length==0) {
-                    // divInContent.innerHTML = questionResponse.errorMessages[0];
-                    // content.innerHTML = "";
-                    // content.appendChild(divInContent);
+                if (qPlayed.length===0) {
                     addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
                 }else {
                     displayPreviousAnswers();
@@ -434,8 +432,8 @@ function nextQuestion() {
  *****************************************************************************************************/
 function answer(type = "") {
     let usersAnswer;
-    let userHasAnswered;    //will be used to prevent calling with empty answers
-    if (type == "BOOLEAN" || type =="MCQ") {    //getting the value of the radio buttons
+    let userHasAnswered =false;    //will be used to prevent calling with empty answers
+    if (type === "BOOLEAN" || type ==="MCQ") {    //getting the value of the radio buttons
         let radios = document.getElementsByClassName("radio");
         for (let i = 0; i < radios.length; i++) {
             if (radios[i].checked) {
@@ -446,7 +444,7 @@ function answer(type = "") {
         }
     }else {
         usersAnswer = document.getElementById("answerBox").value;
-        userHasAnswered = usersAnswer != "";
+        userHasAnswered = usersAnswer !== "";
     }
 
     if (!userHasAnswered) { //in case there is nothing selected or typed
@@ -459,7 +457,7 @@ function answer(type = "") {
         loadLoader();
         answerRequest.send();
         answerRequest.onload = function () {
-            if (this.status == 200) {
+            if (this.status === 200) {
                 let answerResponse = JSON.parse(this.responseText);
                 console.log(answerResponse);
                 if (answerResponse.correct) {
@@ -467,32 +465,23 @@ function answer(type = "") {
                      *              Correct                  *
                      ****************************************/
                     answerBox = "";
-                    // content.innerHTML = "";
-                    // divInContent.innerHTML = "Correct<br>";
-                    // content.appendChild(divInContent);
                     addHtmlAndAppend(content, divInContent, "Correct<br>");
                     divInContent.innerHTML += "<button onclick='nextQuestion()'>Proceed</button>";
                     /* if the answer is correct, everything is saved and a proceed button will appear*/
                     qObject = {"q": currentQ, "a": usersA};
                     qPlayed.push(qObject);
                     usersA = []; //array is emptied to accommodate the answers of another question
-                    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime);
+                    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime + quizSelected.endsOn);
                     console.log("previous Q and A ");
                     console.log(qPlayed);
                 } else {
                     if (answerResponse.message.includes("location")) {
                         // for location sensitive answers
-                        // content.innerHTML = "";
-                        // divInContent.innerHTML = "You must be near the location mentioned in the question.<br>";
-                        // content.appendChild(divInContent);
                         addHtmlAndAppend(content, divInContent, "You must be near the location mentioned in the question.<br>");
                     } else {
                         /*****************************************
                          *              Inorrect                 *
                          ****************************************/
-                        // content.innerHTML = "";
-                        // divInContent.innerHTML = "Incorrect.<br>";
-                        // content.appendChild(divInContent);
                         addHtmlAndAppend(content, divInContent, "Incorrect.<br>");
                     }
                     answerBox = "";
@@ -513,7 +502,7 @@ function skip() {
     console.log("qObject before pushed in array");
     console.log(qObject);
     qPlayed.push(qObject);
-    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime);
+    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime+quizSelected.endsOn);
     usersA = [];
     console.log("previous Q and A ");
     console.log(qPlayed);
@@ -538,12 +527,12 @@ function score() {
     scoreRequest.open("GET", SCORE + SESSION + session, true);
     scoreRequest.send();
     scoreRequest.onload = function () {
-        if (this.status == 200){
+        if (this.status === 200){
             let scoreResponse = JSON.parse(scoreRequest.responseText);
             console.log("Response of Score");
             console.log(scoreResponse);
-            if (!quizHasFinished && scoreResponse.score != undefined) {
-                divInContent.innerHTML += "<div id='scoreDiv'>Score: " + scoreResponse.score + "</div>  ";
+            if (!quizHasFinished && scoreResponse.score !== undefined) {
+                divInContent.innerHTML += "<div id='scoreDiv'>Score: " + scoreResponse.score + "</div>";
             }
             scoreNumber = scoreResponse.score;
         }
@@ -563,7 +552,7 @@ function leaderboard(quizNumber) {
     leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted", true);
     leaderRequest.send();
     leaderRequest.onload = function () {
-        if (this.status == 200) {
+        if (this.status === 200) {
             let obj = JSON.parse(leaderRequest.responseText);
             console.log("Response of leaderBoard");
             console.log(obj);
@@ -574,10 +563,6 @@ function leaderboard(quizNumber) {
                 leaderboard += leaderBoardEntry(i+1,arr[i]);
             }
             leaderboard += "</ul></div>";
-            // document.getElementById("leaderP").innerHTML = leaderboard;
-            // content.innerHTML = "";
-            // bigDivInContent.innerHTML = leaderboard;
-            // content.appendChild(bigDivInContent);
             addHtmlAndAppend(content, bigDivInContent, leaderboard);
         }
     };
@@ -610,19 +595,19 @@ function locationCallback(position) {
         console.log(locationResponse);
     }
 }
-/***************************************************************************
- * called by every dial button, for the users to see what has been entered *
- *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
- **************************************************************************/
-function addToAnswerBox(number){
-    if (number==="backspace") {
-        let string = "";
-        string  =document.getElementById("answerBox").value;
-        string = string.substr(0,string.length - 1);
-        document.getElementById("answerBox").value = string;
-    }else
-        document.getElementById("answerBox").value += number;
-}
+// /***************************************************************************
+//  * called by every dial button, for the users to see what has been entered *
+//  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
+//  **************************************************************************/
+// function addToAnswerBox(number){
+//     if (number==="backspace") {
+//         let string = "";
+//         string  =document.getElementById("answerBox").value;
+//         string = string.substr(0,string.length - 1);
+//         document.getElementById("answerBox").value = string;
+//     }else
+//         document.getElementById("answerBox").value += number;
+// }
 
 /***************************************************************************************
  * Goes through the array that contains all previous Q and A and adds the to content   *
@@ -641,9 +626,6 @@ function displayPreviousAnswers(message="") {
         finalContent += "</ul></p>";
     }
     finalContent += "</div>";
-    // content.innerHTML = "";
-    // bigDivInContent.innerHTML = finalContent;
-    // content.appendChild(bigDivInContent);
     addHtmlAndAppend(content, bigDivInContent, finalContent);
 }
 
@@ -689,23 +671,23 @@ function formDate(date,day, month,year,hours, minutes,seconds) {
     return dateStr;
 }
 function createAnswerBox(type) {
-    if (type == "INTEGER" || type == "NUMERIC" ) {
+    if (type === "INTEGER" || type === "NUMERIC" ) {
         //dials and textfield answerButton
         answerBox+= "<div id='dials'><p>" +
             "<p><input type='number' id='answerBox'></p>"+
             "<p><button id='answerButton' type='button' onclick='answer()'>Answer</button></p>";
         //2 radio buttons and answerButton
-    }else if(type=="BOOLEAN") {
+    }else if(type==="BOOLEAN") {
         answerBox+="<div id='radios'><p>"+
             "<input class='radio' type='radio' name='boolean' value='true'>True<br>"+
             "<input class='radio' type='radio' name='boolean' value='false'>False</p>"+
             "<p><button id='answerButton' type='button' onclick='answer("+'"BOOLEAN"'+")'>Answer</button></p></div>";
         //textfield and answerButton
-    }else if(type=="TEXT"){
+    }else if(type ==="TEXT"){
         answerBox+="<p><input type='text' placeholder=' Your answer goes here' id='answerBox'></p>"+
             "<p><button id='answerButton' type='button' onclick='answer()'>Answer</button></p>";
         //4 radio buttons and answerButton
-    }else if (type == "MCQ") {
+    }else if (type === "MCQ") {
         answerBox+="<div id='radios'><p style='display: inline'><br> " +
             "<input class='radio' type='radio' name='boolean' value='a'>A"+
             "<input class='radio' type='radio' name='boolean' value='b'>B" +

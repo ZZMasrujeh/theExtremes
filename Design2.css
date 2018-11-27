@@ -6,7 +6,7 @@ body{
     padding: 0 2%;
     background:black url("images/37125686250_b18d3ac587_b.jpg") ;
     /*background: black no-repeat;*/
-    background-size: 50%;
+    background-size: 100%;
 }
 #header,#content,#footer {
     opacity: 0;
