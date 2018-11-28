@@ -26,7 +26,6 @@ from scenario 3, everything is deleted so it will not start from there every tim
  *********************************************************************************
  * Scenario 3: the page is restarted but the quiz has been completed.            *
  ********************************************************************************/
-
 var quizzes; //all quizzes after listAvailableQuizzes(),initialize there.
 var quizSelected;   /*the quiz selected from all available, initialized in getQuiz()
  in both scenarios, however in the second scenario, the page will have to load the list again*/
@@ -406,7 +405,7 @@ function nextQuestion() {
                     deleteCookie();
                     footer.innerHTML = createdBy;
                     let message =  "Congratulations" + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
-                        "<button onclick='leaderboard("+'"' +session+'"'+")' id='leaderButton'>Leaderboard</button>";
+                        '<button onclick="leaderboard('+ '\'' +session+'\''+')" id="leaderButton">Leaderboard</button>';
                     session = "";
                     console.log("message before final display ");
                     console.log(message);
