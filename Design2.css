@@ -12,7 +12,7 @@ body{
     opacity: 0;
     /*margin: 5% 3%;*/
     position: absolute;
-    border: solid 2pt red;
+    border: solid 2pt #bcaaa4;
     padding: 3%;
     width: 85%;
     background: #ffffff;
@@ -29,7 +29,7 @@ body{
     min-height: 8%;
     max-height: 8%;
     border-radius: 20pt 20pt 5pt 5pt;
-    overflow: auto;
+    /*overflow: auto;*/
 }
 #content {
     font-size: 1em;
@@ -44,7 +44,7 @@ body{
     min-height: 8%;
     max-height: 8%;
     border-radius: 5pt 5pt 20pt 20pt;
-    overflow: auto;
+    /*overflow: auto;*/
 }
 
 @keyframes fadeIn  {
@@ -56,9 +56,12 @@ body{
     border: 35px solid #f3f3f3;
     border-top: 35px solid #3498db;
     border-radius: 50%;
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     animation: spin 1s linear infinite;
+    position: relative;
+    left: 6%;
+    top: 12%;
 }
 #divInContent{
     position: relative;

@@ -69,8 +69,8 @@ function testL(){
         header.innerHTML = "Available Quizzes";
         for (let i = 0; i < quizzes.length; i++) {
             htmlText +=
-                "<div onclick='testShowMore("+i+")' class='availableQuiz'>" +
-                " <span class='quizzName'>" + quizzes[i].name + ".</span><br></div>";
+                "<button onclick='testShowMore("+i+")' class='availableQuiz'>" +
+                " <span class='quizzName'>" + quizzes[i].name + ".</span><br></button><br>";
         }
         content.innerHTML = htmlText;
     };

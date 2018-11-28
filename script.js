@@ -166,14 +166,23 @@ function saveInCookie(property,value,endsOn){
     document.cookie = property + "=" + value + ";" + expString;
 }
 
+// function readFromCookie(property) {
+//     let kv = document.cookie.split(";");
+//     for (let i = 0; i < kv.length; i++) {
+//         let key = kv[i].split("=")[0].trim();
+//         let val = kv[i].split("=")[1];
+//         if (property===key) return val;
+//     }
+// }
 function readFromCookie(property) {
     let kv = document.cookie.split(";");
     for (let i = 0; i < kv.length; i++) {
-        let key = kv[i].split("=")[0].trim();
-        let val = kv[i].split("=")[1];
-        if (property===key) return val;
+        if (kv[i].includes(property+"=")) {
+            return kv[i].replace(property + "=", "");
+        }
     }
 }
+
 function deleteCookie() {
     let expiryTime = new Date(Date.now() -10000);
     let expString = "expires=" + expiryTime.toUTCString()+";";
