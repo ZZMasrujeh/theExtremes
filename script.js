@@ -15,6 +15,10 @@ const SCORE = URL + "score?";
 const LOCATION = URL + "location?";
 const LOCATION_INTERVAL = 60000; //location will be updated every minute
 const createdBy = "Created by theExtremes";
+const answersInCookieTime = 90000;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
+1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 is forthcoming (if the app starts
+from scenario 3, everything is deleted so it will not start from there every time) */
+
 /*********************************************************************************
  * Scenario 1: the page starts from the beggining, with no active Treasure Hunts *
  * *******************************************************************************
@@ -26,7 +30,7 @@ const createdBy = "Created by theExtremes";
 var quizzes; //all quizzes after listAvailableQuizzes(),initialize there.
 var quizSelected;   /*the quiz selected from all available, initialized in getQuiz()
  in both scenarios, however in the second scenario, the page will have to load the list again*/
-
+var quizNumber;
 var playersName=""; //when the player is about to start, he must specify a name
 var session="";     //new or from cookie
 var quizName = "";  //new or from cookie ?????name vs ID?????
@@ -47,7 +51,7 @@ var divInContent = document.createElement("div");
 divInContent.id = "divInContent";
 
 let bigDivInContent = document.createElement("div");
-bigDivInContent.id = "fDivInContent";
+bigDivInContent.id = "bigDivInContent";
 
 var loader ="<div id = 'loader'></div>";
 
@@ -61,10 +65,7 @@ when the quiz finishes*/
 var qObject;    //will contain {q:"question, a[]:"answers"}
 var currentQ;   //the questions before it is saved
 var usersA=[];  //all the answers before and including the correct answer or skip
-var answersInCookieTime = 180000;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
-1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 is forthcoming (if the app starts
-from scenario 3, everything is deleted so it will not start from there every time) */
-
+var endsOn;
 function loadLoader() {
     //attempting not to add another loader, because the spin will ne interrupted
     if ( document.getElementById("loader") != null ) {
@@ -77,43 +78,66 @@ function loadLoader() {
 
 //continuing from previous session
 if (document.cookie!==""){   //cookie is not empty
-    /***********************
-     * Start of scenario 2 *
-     ***********************/
-    console.log("cookie contents");     //once I am done console.logs will be deleted
     console.log(document.cookie);
-    session = readFromCookie("session");
-    quizName = readFromCookie("quizName");
-    playersName = readFromCookie("playersName");
-    if (readFromCookie("qPlayed") === undefined) {   /*in case something goes wrong and the previous questions
-    are not saved, the array will be initialized empty, probably nobody will notice that there are missing
-    questions. I wouldn't ! */
-        console.log("Previous q&a restarted");
-        qPlayed = [];
-    }else {
-        console.log("Previous q&a loaded");
-        qPlayed = JSON.parse(readFromCookie("qPlayed"));
-    }
-    console.log(qPlayed);
-    getLocation(); //first location call for scen 2
-    setInterval(getLocation,LOCATION_INTERVAL );    //repeated location calls
-    nextQuestion(); //will take the player to the last unanswered question, if there is one
 
-    if (session === undefined && qPlayed !== undefined && qPlayed.length > 0) {
+    if (readFromCookie("session") === undefined) {
+        if (readFromCookie("finalContent" === undefined)) {
+            console.log("from 2-3 to 1");
+            listAvailableQuizzes();
+        }else {
+            /***********************
+             * start of Scenario 3 *
+             * ********************/
+            console.log("Scenario 3");
+
+            navigation.push("list");
+            nav();
+            footer.innerHTML = readFromCookie("finalFooter");
+            content.innerHTML = readFromCookie("finalContent");
+            header.innerHTML = readFromCookie("finalHeader");
+            deleteCookie();
+            /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
+            refreshes more than once after the quiz has finished, he will end up here*/
+        }
+    }else {
         /***********************
-         * start of Scenario 3 *
-         * ********************/
-        header.innerHTML = "Treasure Hunt over";
-        footer.innerHTML = createdBy;
-        displayPreviousAnswers();
-        deleteCookie();
-        /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
-        refreshes more than once after the quiz has finished, he will end up here*/
+         * Start of scenario 2 *
+         ***********************/
+        console.log("Scenario 2");
+        console.log("cookie contents");     //once I am done console.logs will be deleted
+
+        session = readFromCookie("session");
+        console.log("Read session from cookie " + readFromCookie("session"));
+
+        quizName = readFromCookie("quizName");
+        playersName = readFromCookie("playersName");
+        playersName = playersName.substring(1);
+        quizName = quizName.substring(1);
+        endsOn = readFromCookie("endsOn");
+
+        console.log(quizName);
+        console.log(playersName);
+        console.log(endsOn);
+        updateQuizSelected();
+        if (readFromCookie("qPlayed") === undefined) {   /*in case something goes wrong and the previous questions
+        are not saved, the array will be initialized empty, probably nobody will notice that there are missing
+        questions. I wouldn't ! */
+            console.log("Previous q&a restarted");
+            qPlayed = [];
+        }else {
+            console.log("Previous q&a loaded");
+            qPlayed = JSON.parse(readFromCookie("qPlayed"));
+        }
+        console.log(qPlayed);
+        getLocation(); //first location call for scen 2
+        setInterval(getLocation,LOCATION_INTERVAL );    //repeated location calls
+        nextQuestion(); //will take the player to the last unanswered question, if there is one
     }
 } else {
     /***********************
      * Start of scenario 1 *
      ***********************/
+    console.log("Scenario 1");
     listAvailableQuizzes();
     footer.innerHTML = createdBy;
 }
@@ -125,8 +149,6 @@ if (document.cookie!==""){   //cookie is not empty
  ***********************************************************/
 function nav() {
     if (navigation.length > 0) {
-        // buttonDiv.innerHTML=buttonDivHTML;
-        // document.body.appendChild(buttonDiv);
         backButton.style.display = "block";
     }
 }
@@ -141,10 +163,10 @@ function backAction() {
             listAvailableQuizzes();
             break;
         case "question":
-            showMore(quizSelected);
+            showMore(quizNumber);
             break;
         case "leaderboard":
-            showMore(quizzes.indexOf(quizSelected));
+            showMore(quizNumber);
             break;
 
     }
@@ -166,23 +188,17 @@ function saveInCookie(property,value,endsOn){
     document.cookie = property + "=" + value + ";" + expString;
 }
 
-// function readFromCookie(property) {
-//     let kv = document.cookie.split(";");
-//     for (let i = 0; i < kv.length; i++) {
-//         let key = kv[i].split("=")[0].trim();
-//         let val = kv[i].split("=")[1];
-//         if (property===key) return val;
-//     }
-// }
 function readFromCookie(property) {
     let kv = document.cookie.split(";");
     for (let i = 0; i < kv.length; i++) {
+        // let key = kv[i].split("=")[0].trim();
+        // let val = kv[i].split("=")[1];
+        // if (property===key) return val;
         if (kv[i].includes(property+"=")) {
-            return kv[i].replace(property + "=", "");
+            return kv[i].replace(""+property + "=","");
         }
     }
 }
-
 function deleteCookie() {
     let expiryTime = new Date(Date.now() -10000);
     let expString = "expires=" + expiryTime.toUTCString()+";";
@@ -233,80 +249,71 @@ function listAvailableQuizzes() {
                 //check which quizzes are available and add them to the list
                 htmlText +=
                     "<div onclick='showMore("+i+")' class='availableQuiz'>" +
-                    "<span class='quizzName'>" + quizzes[i].name + ".</span><br></div>";
+                    "<span class='quizzName'>" + quizzes[i].name + ".</span></div>";
             }
-            // content.innerHTML = "";
-            // divInContent.innerHTML = htmlText;
-            // content.appendChild(divInContent);
             //display the available quizzes in the content div
             addHtmlAndAppend(content, divInContent, htmlText);
         }
         navigation.push("list");
         if (quizName !== undefined && session !=="") {
-            footer.innerHTML = quizName + " is still active. You may start a new one, once there are no active hunts";
+            footer.innerHTML = quizName + " is still active.";
         }else {
-            footer.innerHTML = createdBy;
+            footer.innerHTML = "Select treasure hunt by touching/clicking";
         }
     };
 }
 
 /**************************************************************************
  * Shows more details for the treasure hunt selected, after /list is done *
- * @param quizNumber: the index of the array returned by /list            *
+ * @param quizN: the index of the array returned by /list            *
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  *************************************************************************/
-function showMore(quizNumber) {  //more details about the selected quiz
-    quizSelected = quizzes[quizNumber];
+function showMore(quizN) {  //more details about the selected quiz
+    quizNumber = quizN;
+    quizSelected = quizzes[quizN];
     nav();
-    header.innerHTML = quizzes[quizNumber].name;
-    let htmlText;
-    htmlText = "<div id='tHDetailsDiv'>" +
-        "<u>Description:</u> " + quizzes[quizNumber].description+"<br>";   //description
-    if (quizzes[quizNumber].maxDuration/1000/60> 0){
-        htmlText += "<u>Duration:</u>" + (quizzes[quizNumber].maxDuration / 60 / 1000) + " minutes<br>";  //duration
+    header.innerHTML = quizSelected.name;
+    let htmlText = "<div id='buttonsInDetails'>";
+
+    quizName = quizzes[quizN].name;/*this is necessary, otherwise ->  if(quizName != quizzes[quizNumber].name)
+    wont work, the same is assigned again in later, but it will be necessary for scenario 2*/
+
+    if (session !== "") { // already running a quiz.
+
+            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume previous hunt</button><br> ";
+
+        footer.innerHTML = "You have another running treasure hunt !";
+    }else { //no running quiz
+        footer.innerHTML = "Enter a name and <br><strong>START YOUR HUNT</strong> !";
+        htmlText+= "<input id='nameInput' placeholder='Enter a name here'> <br>" +      //textfield for name
+            "<button class='button' id='startButton' onclick='getQuiz(" + quizN + ")'>Start</button><br>" ;
+        //button to start
+    }
+    htmlText+="<button onclick='leaderboard(" +quizN+
+        ")' id='leaderButton'>Leaderboard</button><br><br></div>";
+    htmlText += "<div id='tHDetailsDiv'>" +
+        "<u>Description:</u> " + quizzes[quizN].description+"<br>";   //description
+    if (quizzes[quizN].maxDuration/1000/60> 0){
+        htmlText += "<u>Duration:</u>" + (quizzes[quizN].maxDuration / 60 / 1000) + " minutes<br>";  //duration
     } else {
         htmlText +="<u>Duration:</u> Unlimited<br>";
     }
     htmlText+=
-        "<u>Starts on:</u> "+ (new Date(quizzes[quizNumber].startsOn).toUTCString())+"<br>"+ //start
-        "<u>Ends on:</u> "+(new Date(quizzes[quizNumber].endsOn).toUTCString())+"<br><br>";        //end
-    if (quizzes[quizNumber].hasPrize){
+        "<u>Starts on:</u> "+ (new Date(quizzes[quizN].startsOn).toUTCString())+"<br>"+ //start
+        "<u>Ends on:</u> "+(new Date(quizzes[quizN].endsOn).toUTCString())+"<br><br>";        //end
+    if (quizzes[quizN].hasPrize){
         htmlText+="With Prize<br>";                                                     //prize
     } else {
         htmlText+="Without Prize<br>";                                                  //or not
     }
-    if (quizzes[quizNumber].shuffled){                                                  //shuffling
-        htmlText+="The questions appear in random order<br>";
+    if (quizzes[quizN].shuffled){                                                  //shuffling
+        htmlText+="<br>The questions appear in random order<br>";
     } else {
-        htmlText+="The questions appear in the same order<br>";
+        htmlText+="<br>The questions appear in the same order<br>";
     }
-    htmlText += "<br>by: " + quizzes[quizNumber].ownerEmail + "</div><br>" ;
+    htmlText += "<br>by: " + quizzes[quizN].ownerEmail + "</div><br>" ;
     console.log(session);
 
-    quizName = quizzes[quizNumber].name;/*this is necessary, otherwise ->  if(quizName != quizzes[quizNumber].name)
-    wont work, the same is assigned again in later, but it will be necessary for scenario 2*/
-
-    if (session !== "") { // already running a quiz.
-        // In case the page is closed and reopened: checks if there is a stored session
-        if (quizName !== quizzes[quizNumber].name) {  /*if a different quiz from the one that is active, is selected
-        from the list*/
-            htmlText += "You have another running quiz. Finish that one first !";/*warning for
-            the bad selection */
-            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume other treasure hunt</button><br> ";
-        }else {    //if the same, running, quiz is selected from the list
-            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume treasure hunt</button><br> ";
-        }
-    }else { //no running quiz
-        htmlText+= "<input id='nameInput' placeholder='Enter a name here'> <br>" +      //textfield for name
-            "<button class='button' id='startButton' onclick='getQuiz(" + quizNumber + ")'>Start</button><br>" ;
-        //button to start
-    }
-    htmlText+="<button onclick='leaderboard(" +quizNumber+
-        ")' id='leaderButton'>Leaderboard</button>";
-
-    // content.innerHTML = "";
-    // bigDivInContent.innerHTML = htmlText;
-    // content.appendChild(bigDivInContent);
     addHtmlAndAppend(content, bigDivInContent, htmlText);
 }
 
@@ -339,21 +346,21 @@ function getQuiz(quizNumber) {
                     /*************************
                      * QUIZ HAS STARTED
                      ************************/
-                    answersInCookieTime += quizSelected.endsOn;  //time for the user's answers array
-                    /*session, treasure hunt's name and players name will be saved as long as the th lasts, in terms of
-                    time and completion
-                     */
-                    saveInCookie("session", thResponse.session, quizSelected.endsOn);
+                    endsOn = quizSelected.endsOn; //mainly need to update every question and answer in qPlayed in scen 2
+                    saveInCookie("endsOn", endsOn, endsOn);
+                    saveInCookie("session", thResponse.session,endsOn);
                     session = thResponse.session;
-                    saveInCookie("quizName", quizSelected.name, quizSelected.endsOn);
+                    saveInCookie("quizName", quizSelected.name,endsOn);
                     quizName = quizSelected.name;
-                    saveInCookie("playersName", playersName, quizSelected.endsOn);
+                    saveInCookie("playersName", playersName, endsOn);
                     getLocation(); //first location call for scen 1
                     setInterval(getLocation,LOCATION_INTERVAL ); //repeated location calls
                     nextQuestion();
-
                 } else {
-                    footer.innerHTML = thResponse.errorMessages;
+                    addHtmlAndAppend(content, divInContent, thResponse.errorMessages);
+                    let button = document.createElement("button");
+                    button.onclick = "showMore(" + quizNumber + ")";
+                    divInContent.innerHTML += "<br><br><button onclick='showMore(" + quizNumber + ")'>Ok</button>";
                 }
             }
         };
@@ -366,12 +373,13 @@ function getQuiz(quizNumber) {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
  ******************************************************************************************/
 function nextQuestion() {
+    console.log("players name " + playersName);
     loadLoader();
     if (navigation.length === 0) {   //In the scenario 2 the navigation starts empty. pushing the 'list' will provide
         navigation.push("list");    //the user with something to navigate out of the question.
     }
+
     nav();//places the back button, no matter the scenario
-    console.log("Fetching question");
     let questionRequest = new XMLHttpRequest();
     questionRequest.open("GET", QUESTION + SESSION + session,true);
     questionRequest.send();
@@ -393,19 +401,24 @@ function nextQuestion() {
                      *************************************/
                     //clear all
                     header.innerHTML = "Treasure hunt over.";
-                    session = "";
-                    playersName = "";
                     quizName = "";
-                    deleteFromCookie("session");
-                    deleteFromCookie("quizName");
-                    deleteFromCookie("playersName");
                     answerBox = "";
+                    deleteCookie();
                     footer.innerHTML = createdBy;
-                    let message =  "Congratulations " + playersName+" <br>" +
-                        "Your final score is "+scoreNumber+" points.";
+                    let message =  "Congratulations" + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
+                        "<button onclick='leaderboard("+'"' +session+'"'+")' id='leaderButton'>Leaderboard</button>";
+                    session = "";
+                    console.log("message before final display ");
+                    console.log(message);
+
                     displayPreviousAnswers(message);
                     qPlayed = [];
+                    playersName = "";
                 } else {
+                    document.getElementById("restartButton").style.display = "block";
+                    /********************
+                     *  Quiz goes on    *
+                     *******************/
                     header.innerHTML = "Question "+currentQuestion+"/"+totalQuestions+":<br>";   //eg. Question 1/5:
                     currentQ = questionResponse.questionText;   //to be saved in object and array
                     answerBox= currentQ;
@@ -423,11 +436,7 @@ function nextQuestion() {
                     }
                 }
             }else {
-                if (qPlayed.length===0) {
-                    addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
-                }else {
-                    displayPreviousAnswers();
-                }
+                addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
             }
         }
         score();
@@ -455,9 +464,8 @@ function answer(type = "") {
         usersAnswer = document.getElementById("answerBox").value;
         userHasAnswered = usersAnswer !== "";
     }
-
     if (!userHasAnswered) { //in case there is nothing selected or typed
-        divInContent.innerHTML += "<button onclick='nextQuestion()'>Try Again !</button>";
+        // divInContent.innerHTML += "<button onclick='nextQuestion()'>Try Again !</button>";
         footer.innerHTML = "An empty response is not an answer !";
     } else {
         usersA.push(usersAnswer); //the answer to be stored in object and array
@@ -480,7 +488,7 @@ function answer(type = "") {
                     qObject = {"q": currentQ, "a": usersA};
                     qPlayed.push(qObject);
                     usersA = []; //array is emptied to accommodate the answers of another question
-                    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime + quizSelected.endsOn);
+                    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime + endsOn);
                     console.log("previous Q and A ");
                     console.log(qPlayed);
                 } else {
@@ -511,7 +519,7 @@ function skip() {
     console.log("qObject before pushed in array");
     console.log(qObject);
     qPlayed.push(qObject);
-    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime+quizSelected.endsOn);
+    saveInCookie("qPlayed", JSON.stringify(qPlayed), answersInCookieTime+endsOn);
     usersA = [];
     console.log("previous Q and A ");
     console.log(qPlayed);
@@ -545,7 +553,7 @@ function score() {
             }
             scoreNumber = scoreResponse.score;
         }
-    }
+    };
 }
 
 /***************************************************************
@@ -558,7 +566,13 @@ function leaderboard(quizNumber) {
     nav();
     // document.getElementById("leaderButton").removeAttribute("onclick");
     let leaderRequest = new XMLHttpRequest();
-    leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted", true);
+    if (isNaN(quizNumber)) {
+        console.log("isNaN(quizNumber) true");
+        leaderRequest.open("GET", LEADERBOARD + "session=" + quizNumber + "&sorted", true);
+    }else {
+        console.log("isNaN(quizNumber) false");
+        leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted", true);
+    }
     leaderRequest.send();
     leaderRequest.onload = function () {
         if (this.status === 200) {
@@ -604,26 +618,12 @@ function locationCallback(position) {
         console.log(locationResponse);
     }
 }
-// /***************************************************************************
-//  * called by every dial button, for the users to see what has been entered *
-//  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
-//  **************************************************************************/
-// function addToAnswerBox(number){
-//     if (number==="backspace") {
-//         let string = "";
-//         string  =document.getElementById("answerBox").value;
-//         string = string.substr(0,string.length - 1);
-//         document.getElementById("answerBox").value = string;
-//     }else
-//         document.getElementById("answerBox").value += number;
-// }
-
 /***************************************************************************************
  * Goes through the array that contains all previous Q and A and adds the to content   *
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  **************************************************************************************/
 function displayPreviousAnswers(message="") {
-    let finalContent = "<div id='finished'>";
+    let finalContent = "<div id='finished'>"+message+"<br>";
     for (let i = 0; i <qPlayed.length; i++) {
         let object = qPlayed[i];
         if (object.a.length>1)  finalContent+="<p><u>Question "+(i+1)+":</u><br> "+object.q+"<br><br>"+"Your answers:<ul>";
@@ -636,6 +636,15 @@ function displayPreviousAnswers(message="") {
     }
     finalContent += "</div>";
     addHtmlAndAppend(content, bigDivInContent, finalContent);
+    if (session === "") {
+        console.log("final Content");
+
+        saveInCookie("finalHeader", header.innerHTML, Date.now() + answersInCookieTime);
+        saveInCookie("finalContent", content.innerHTML, Date.now() + answersInCookieTime);
+        saveInCookie("finalFooter", footer.innerHTML, Date.now() + answersInCookieTime);
+        console.log(content.innerHTML);
+
+    }
 }
 
 function leaderBoardEntry(i,object) {
@@ -712,4 +721,34 @@ function addHtmlAndAppend(parent, child, html){
     child.innerHTML = html;
     parent.appendChild(child);
 
+}
+
+function startOver() {
+    session = "";
+    quizName = "";
+    answerBox = "";
+    qPlayed = "";
+    playersName = "";
+    listAvailableQuizzes();
+}
+
+function updateQuizSelected() {
+
+    let listRequest = new XMLHttpRequest();
+    listRequest.open("GET", LIST, true);
+    listRequest.send();
+    listRequest.onload = function () {
+        if (this.status === 200) {
+            let listResponse = JSON.parse(this.responseText);
+            console.log("Updating quiz selected ");
+            quizzes = listResponse.treasureHunts;
+            for (let i = 0; i <quizzes.length ; i++) {
+                if (quizName === quizzes[i].name) {
+                    quizNumber = i;
+                    navigation.push("question");
+                    break;
+                }
+            }
+        }
+    }
 }
