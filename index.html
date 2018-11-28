@@ -8,10 +8,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<header>
-    <h1>The Extremes Treasure Hunt APP</h1>
-</header>
+<script>
+    function about(){
+        let aboutText ="# theExtremes\n" +
+            "Assignment for CO1111\n" +
+            "\n" +
+            "For this assignment we have to create a web app, which will be used for playing a treasure hunt with questions.\n" +
+            "\n" +
+            "The quiz take the questions from https://codecyprus.org/th/api/, and the user will have to answer correctly to win, " +
+            "after finding the right information at specific locations.\n" +
+            "\n" +
+            "As part of the assignment, we also have to market the web app as an actual product.\n" +
+            "\n" +
+            "The team members are: Mammatsiou Andreas, Masrujeh Zoher Zacharias and Nikolopoulos Konstantinos.\n" ;
+        content.innerHTML = aboutText;
+    }
+
+</script>
+<div id="header">
+    <form action="App.html">
+        <input type="submit" value="Play"/>
+    <input type="button" onclick="about()" value="About"/>
+    <input type="button" value="Contact"/>
+    </form>
+</div>
+<div id="content"></div>
+
+<div id="footer"></div>
+
 <div class="facebook-logo"><img src="facebook-logo.png" width="200px" alt="facebook-logo"></div>
+
 <div>
   <a href="App.html">Web app link</a>
 </div>
