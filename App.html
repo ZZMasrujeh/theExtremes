@@ -3,19 +3,30 @@
 <head>
 	<title>Sample</title> <link rel="icon" href="images/37125686250_b18d3ac587_b.jpg">
 	<!--<link rel="stylesheet" type="text/css" href="Design.css">-->
-    <link rel="stylesheet" type="text/css" href="Design2.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="Design2.css">
+	<!--<link rel="stylesheet" type="text/css" href="style.css">-->
+	<link rel="stylesheet"
+		  href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
-<div id="buttonDiv">
-	<form action="index.html">
-		<button id="homeButton" >Home</button>
-	</form>
-	<button onclick="startOver()" id="restartButton">Start Over</button>
-	<button id="backButton" onclick="backAction()">Back</button>
-</div>
+<ul id="buttonList">
+	<li><form action="index.html">
+		<button id="homeButton" ><i class="material-icons">home</i></button>
+	</form></li>
+	<li>
+		<form action="reader.html">
+			<button type="submit" id="qr" value="QR Reader"><i class="material-icons">pages</i></button>
+		</form>
+	</li>
+
+	<li><button type="button" id="night" value="Night Mode"><i class="material-icons">brightness_3</i></button></li>
+	<li><button onclick="startOver()" id="restartButton"><i class="material-icons">settings_backup_restore</i></button></li>
+	<li><button id="backButton" onclick="backAction()"><i class="material-icons">arrow_back</i></button></li>
+</ul>
+
 <div id="header">
 
 	<p>
@@ -39,7 +50,6 @@
 		footer
 	</p>
 </div>
-
 <script src="script.js"></script>
 
 </body>

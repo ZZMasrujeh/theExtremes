@@ -94,7 +94,7 @@ if (document.cookie!==""){   //cookie is not empty
             footer.innerHTML = readFromCookie("finalFooter");
             content.innerHTML = readFromCookie("finalContent");
             header.innerHTML = readFromCookie("finalHeader");
-            deleteCookie();
+            // deleteCookie();
             /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
             refreshes more than once after the quiz has finished, he will end up here*/
         }
@@ -190,9 +190,6 @@ function saveInCookie(property,value,endsOn){
 function readFromCookie(property) {
     let kv = document.cookie.split(";");
     for (let i = 0; i < kv.length; i++) {
-        // let key = kv[i].split("=")[0].trim();
-        // let val = kv[i].split("=")[1];
-        // if (property===key) return val;
         if (kv[i].includes(property+"=")) {
             return kv[i].replace(""+property + "=","");
         }
@@ -404,7 +401,7 @@ function nextQuestion() {
                     answerBox = "";
                     deleteCookie();
                     footer.innerHTML = createdBy;
-                    let message =  "Congratulations" + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
+                    let message =  "Congratulations " + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
                         '<button onclick="leaderboard('+ '\'' +session+'\''+')" id="leaderButton">Leaderboard</button>';
                     session = "";
                     console.log("message before final display ");
@@ -563,14 +560,13 @@ function score() {
 function leaderboard(quizNumber) {
     navigation.push("leaderboard");
     nav();
-    // document.getElementById("leaderButton").removeAttribute("onclick");
     let leaderRequest = new XMLHttpRequest();
     if (isNaN(quizNumber)) {
         console.log("isNaN(quizNumber) true");
         leaderRequest.open("GET", LEADERBOARD + "session=" + quizNumber + "&sorted", true);
     }else {
         console.log("isNaN(quizNumber) false");
-        leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted", true);
+        leaderRequest.open("GET", LEADERBOARD + "treasure-hunt-id=" + quizzes[quizNumber].uuid + "&sorted&limit=100", true);
     }
     leaderRequest.send();
     leaderRequest.onload = function () {
@@ -622,11 +618,16 @@ function locationCallback(position) {
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  **************************************************************************************/
 function displayPreviousAnswers(message="") {
+    backButton.style.display = "none";
     let finalContent = "<div id='finished'>"+message+"<br>";
     for (let i = 0; i <qPlayed.length; i++) {
         let object = qPlayed[i];
-        if (object.a.length>1)  finalContent+="<p><u>Question "+(i+1)+":</u><br> "+object.q+"<br><br>"+"Your answers:<ul>";
-        else finalContent+="<p><u>Question "+(i+1)+":</u> <br>"+object.q+"<br><br>"+"Your answer:<ul>";
+        if (object.a.length>1) {
+            finalContent+="<p><u>Question "+(i+1)+":</u><br> "+object.q+"<br><br>"+"Your answers:<ul>";
+        }
+        else {
+            finalContent+="<p><u>Question "+(i+1)+":</u> <br>"+object.q+"<br><br>"+"Your answer:<ul>";
+        }
         for (let j = 0; j <object.a.length ; j++) {
             let answers = object.a;
             finalContent += "<li>" + answers[j] + "</li>";
@@ -637,55 +638,24 @@ function displayPreviousAnswers(message="") {
     addHtmlAndAppend(content, bigDivInContent, finalContent);
     if (session === "") {
         console.log("final Content");
-
         saveInCookie("finalHeader", header.innerHTML, Date.now() + answersInCookieTime);
         saveInCookie("finalContent", content.innerHTML, Date.now() + answersInCookieTime);
         saveInCookie("finalFooter", footer.innerHTML, Date.now() + answersInCookieTime);
         console.log(content.innerHTML);
-
     }
 }
+let options = { day: 'numeric', month: 'short', hour: '2-digit',minute: '2-digit', second: '2-digit' };
 
 function leaderBoardEntry(i,object) {
-    let compDate = new Date(object.completionTime);
+    let date = new Date(object.completionTime);
+    let formattedDate = date.toLocaleDateString("en-UK", options);
     let entry ="<li>"+
         "<strong>"+i+"</strong> "+
         "<i>"+object.player+"</i> "+
         "<strong>"+object.score+"</strong> "+
-        "<small>"+formDate(compDate.getDate(),+compDate.getDay(),+compDate.getMonth(),+compDate.getFullYear(),
-            compDate.getHours(),compDate.getMinutes(),compDate.getSeconds())+"</small>"+
+        "<small>"+formattedDate+"</small>"+
         "</li>";
     return entry;
-}
-function formDate(date,day, month,year,hours, minutes,seconds) {
-    let dateStr="";
-    switch (day) {
-        case 0:
-            dateStr+="Sunday ";
-            break;
-        case 1:
-            dateStr+="Monday ";
-            break;
-        case 2:
-            dateStr+="Tuesday ";
-            break;
-        case 3:
-            dateStr+="Wednesday ";
-            break;
-        case 4:
-            dateStr+="Thursday ";
-            break;
-        case 5:
-            dateStr+="Friday ";
-            break ;
-        case 6:
-            dateStr+="Saturday ";
-            break
-    }
-    dateStr += date + "/" + (month + 1)+"/" + year+", "+hours+":";
-    if (minutes<10) dateStr += ":0"+ minutes +":"+ seconds;
-    else  dateStr+=minutes+":"+seconds;
-    return dateStr;
 }
 function createAnswerBox(type) {
     if (type === "INTEGER" || type === "NUMERIC" ) {
@@ -719,7 +689,6 @@ function addHtmlAndAppend(parent, child, html){
     parent.innerHTML = "";
     child.innerHTML = html;
     parent.appendChild(child);
-
 }
 
 function startOver() {
@@ -732,7 +701,6 @@ function startOver() {
 }
 
 function updateQuizSelected() {
-
     let listRequest = new XMLHttpRequest();
     listRequest.open("GET", LIST, true);
     listRequest.send();
