@@ -88,13 +88,12 @@ if (document.cookie!==""){   //cookie is not empty
              * start of Scenario 3 *
              * ********************/
             console.log("Scenario 3");
-
             navigation.push("list");
             nav();
             footer.innerHTML = readFromCookie("finalFooter");
             content.innerHTML = readFromCookie("finalContent");
             header.innerHTML = readFromCookie("finalHeader");
-            // deleteCookie();
+            deleteCookie();
             /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
             refreshes more than once after the quiz has finished, he will end up here*/
         }
@@ -276,7 +275,7 @@ function showMore(quizN) {  //more details about the selected quiz
 
     if (session !== "") { // already running a quiz.
 
-            htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume previous hunt</button><br> ";
+        htmlText+= "<button id='resumeButton' onclick='nextQuestion()'>Resume previous hunt</button><br> ";
 
         footer.innerHTML = "You have another running treasure hunt !";
     }else { //no running quiz
@@ -418,18 +417,16 @@ function nextQuestion() {
                     header.innerHTML = "Question "+currentQuestion+"/"+totalQuestions+":<br>";   //eg. Question 1/5:
                     currentQ = questionResponse.questionText;   //to be saved in object and array
                     answerBox= currentQ;
-                    createAnswerBox(questionResponse.questionType);
-                    addHtmlAndAppend(content, divInContent, answerBox);
-                    //adding the skip button or letting the user know that this question cannot be skipped
-                    if (questionResponse.canBeSkipped) {
-                        divInContent.innerHTML += "<button id='skipButton' onClick='skip()'>Skip</button>";
-                        footer.innerHTML = createdBy;
+                    createAnswerBox(questionResponse.questionType,questionResponse.canBeSkipped);
+                    if (questionResponse.questionType==="MCQ"){
+                        addHtmlAndAppend(content, bigDivInContent, answerBox);
                     } else {
-                        footer.innerHTML = "<span>This question cannot be skipped</span>";
+                        addHtmlAndAppend(content, divInContent, answerBox);
                     }
                     if (questionResponse.requiresLocation) {
                         footer.innerHTML = "You must be near the location to answer";
                     }
+
                 }
             }else {
                 addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
@@ -479,7 +476,7 @@ function answer(type = "") {
                      ****************************************/
                     answerBox = "";
                     addHtmlAndAppend(content, divInContent, "Correct<br>");
-                    divInContent.innerHTML += "<button onclick='nextQuestion()'>Proceed</button>";
+                    divInContent.innerHTML += "<button id='proceedButton' onclick='nextQuestion()'>Proceed</button>";
                     /* if the answer is correct, everything is saved and a proceed button will appear*/
                     qObject = {"q": currentQ, "a": usersA};
                     qPlayed.push(qObject);
@@ -559,7 +556,9 @@ function score() {
  **************************************************************/
 function leaderboard(quizNumber) {
     navigation.push("leaderboard");
-    nav();
+    if( session !=="undefined" ||session!==null || session !==undefined) {
+        nav();
+    }
     let leaderRequest = new XMLHttpRequest();
     if (isNaN(quizNumber)) {
         console.log("isNaN(quizNumber) true");
@@ -657,7 +656,7 @@ function leaderBoardEntry(i,object) {
         "</li>";
     return entry;
 }
-function createAnswerBox(type) {
+function createAnswerBox(type,canBeSkipped) {
     if (type === "INTEGER" || type === "NUMERIC" ) {
         //dials and textfield answerButton
         answerBox+= "<div id='dials'><p>" +
@@ -682,6 +681,13 @@ function createAnswerBox(type) {
             "<input class='radio' type='radio' name='boolean' value='d'>D" +
             "</p></div>"+
             "<p><button id='answerButton' type='button' onclick='answer(" + '"MCQ"' + ")'>Answer</button></p>";
+    }
+    //adding the skip button or letting the user know that this question cannot be skipped
+    if (canBeSkipped) {
+        answerBox += "<button id='skipButton' onClick='skip()'>Skip</button>";
+        footer.innerHTML = createdBy;
+    } else {
+        footer.innerHTML = "<span>This question cannot be skipped</span>";
     }
 }
 
@@ -717,5 +723,31 @@ function updateQuizSelected() {
                 }
             }
         }
+    }
+}
+
+function loadCss() {
+    let head = document.getElementsByTagName('head')[0];
+    if (document.getElementById("nightMode").checked) {
+        let oldLink = document.getElementById("day");
+        head.removeChild(oldLink);
+        let link = document.createElement('link');
+        link.href = 'DesignNight.css';
+        link.id = "night";
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.media = 'all';
+        head.appendChild(link);
+    }else {
+        let oldLink = document.getElementById("night");
+        head.removeChild(oldLink);
+        let link = document.createElement('link');
+        link.href = 'Design2.css';
+        link.id = "day";
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.media = 'all';
+        head.appendChild(link);
+
     }
 }

@@ -4,18 +4,21 @@ html,body{
 }
 body{
     padding: 0 2%;
-    background:black url("images/37125686250_b18d3ac587_b.jpg") ;
+    background-color:black ;
     /*background: black no-repeat;*/
-    background-size: 98%;
+    /*background-size: 98%;*/
+}
+*{
+    color: white;
 }
 #header,#content,#footer {
     opacity: 0;
     /*margin: 5% 3%;*/
     position: absolute;
-    border: solid 2pt #bcaaa4;
+    border: solid 2pt white;
     padding: 3%;
     width: 85%;
-    background: #ffffff;
+    background: black;
     background-blend-mode: hue;
     text-align: center;
     animation:fadeIn  1.5s 1 forwards linear  ;
@@ -52,8 +55,8 @@ body{
 }
 
 #loader {
-    border: 35px solid #f3f3f3;
-    border-top: 35px solid #3498db;
+    border: 35px solid black;
+    border-top: 35px solid white;
     border-radius: 50%;
     width: 200px;
     height: 200px;
@@ -74,22 +77,16 @@ body{
 }
 #skipButton{
     float: left;
-    font-size: 1em;
-
 }
 #scoreDiv{
     clear: both;
 }
 #answerButton{
     float: right;
-    font-size: 1em;
-}
-#proceedButton{
-    font-size: 1em;
 }
 
 .availableQuiz{
-    border: solid 1pt black;
+    border: solid 1pt white;
     border-radius: 10pt;
     margin-top: 2%;
     padding: 1%;
@@ -107,20 +104,23 @@ body{
     padding: 0;
 }
 #leaderDiv li{
-    border: 1pt solid black;
+    border: 1pt solid white;
     margin-bottom: 5%;
 }
-
 input[type=radio] {
     margin-left: 8%;
     margin-right: 2%;
     transform: scale(2);
+    background-color: black;
+    color: white;
+}
+input[type=text],input[type=number]{
+    background-color: black;
+    color: white;
 }
 #buttonList {
     padding: 0;
     margin: 0;
-    /*background-color: white;*/
-
 }
 #buttonList li{
     display: inline-block;
@@ -128,9 +128,10 @@ input[type=radio] {
 }
 #homeButton, #restartButton,#backButton,#qr,#nightMode{
     font-size: 1.4em;
+    background-color: black;
+
 }
 #nightModeLI{
-    background-color: white;
     padding-top: 4%;
     padding-bottom: 1.5%;
 }

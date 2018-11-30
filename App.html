@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Sample</title> <link rel="icon" href="images/37125686250_b18d3ac587_b.jpg">
-	<!--<link rel="stylesheet" type="text/css" href="Design.css">-->
-	<link rel="stylesheet" type="text/css" href="Design2.css">
-	<!--<link rel="stylesheet" type="text/css" href="style.css">-->
+	<title>Sample</title>
+    <link rel="icon" href="images/37125686250_b18d3ac587_b.jpg">
+	<link id="day" rel="stylesheet" type="text/css" href="Design2.css">
 	<link rel="stylesheet"
 		  href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
@@ -22,7 +21,7 @@
 		</form>
 	</li>
 
-	<li><button type="button" id="night" value="Night Mode"><i class="material-icons">brightness_3</i></button></li>
+	<li id="nightModeLI"><input type="checkbox" onclick="loadCss()" id="nightMode" value="Night Mode"><i class="material-icons">brightness_3</i></li>
 	<li><button onclick="startOver()" id="restartButton"><i class="material-icons">settings_backup_restore</i></button></li>
 	<li><button id="backButton" onclick="backAction()"><i class="material-icons">arrow_back</i></button></li>
 </ul>
@@ -30,24 +29,14 @@
 <div id="header">
 
 	<p>
-		blah<br>
-		blah
 	</p>
 </div>
 <div id="content">
 	<p>
-		content<br>
-		content<br>
-		content<br>
-		content<br>
 	</p>
 </div>
 <div id="footer" >
 	<p>
-		footer<br>
-		footer<br>
-		footer<br>
-		footer
 	</p>
 </div>
 <script src="script.js"></script>
