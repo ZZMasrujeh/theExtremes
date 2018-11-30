@@ -112,15 +112,18 @@ input[type=radio] {
     margin-right: 2%;
     transform: scale(2);
     background-color: black;
-    color: white;
 }
 input[type=text],input[type=number]{
     background-color: black;
-    color: white;
 }
 #buttonList {
     padding: 0;
     margin: 0;
+}
+#buttonsInDetails input, button {
+    color: white;
+    background-color: black;
+
 }
 #buttonList li{
     display: inline-block;

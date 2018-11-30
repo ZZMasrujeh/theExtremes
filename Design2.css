@@ -119,8 +119,6 @@ input[type=radio] {
 #buttonList {
     padding: 0;
     margin: 0;
-    /*background-color: white;*/
-
 }
 #buttonList li{
     display: inline-block;
