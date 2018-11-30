@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>QR Code Reader</title>
     <style>
-        #content{
+        .content{
             margin: 20px;
             padding: 20px;
             background-color: black;
@@ -16,7 +16,7 @@
 <body>
 
 <video id="preview"></video>
-<div id="content"></div>
+<div class="content"></div>
 
 <script src="instascan.min.js"></script>
 <script>
@@ -27,12 +27,12 @@
     Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
             for (let i = 0; i <cameras.length ; i++) {
-                if (cameras[i].name.includes("Rear")||cameras[i].name.includes("rear")) {
+                // if (cameras[i].name.includes("Rear")||cameras[i].name.includes("rear")) {
                     scanner.start(cameras[i]);
-                    break;
-                }
+                    // break;
+                // }
             }
-            // scanner.start(cameras[0]);
+            // scanner.start(cameras[1]);
             console.log(cameras);
         } else {
             console.error('No cameras found.');
