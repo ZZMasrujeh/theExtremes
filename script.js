@@ -112,7 +112,7 @@ if (document.cookie!==""){   //cookie is not empty
         playersName = playersName.substring(1);
         quizName = quizName.substring(1);
         endsOn = readFromCookie("endsOn");
-
+        score();
         console.log(quizName);
         console.log(playersName);
         console.log(endsOn);
@@ -432,7 +432,6 @@ function nextQuestion() {
                 addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
             }
         }
-        score();
     }
 }
 /******************************************************************************************************
@@ -468,6 +467,7 @@ function answer(type = "") {
         answerRequest.send();
         answerRequest.onload = function () {
             if (this.status === 200) {
+                score();
                 let answerResponse = JSON.parse(this.responseText);
                 console.log(answerResponse);
                 if (answerResponse.correct) {
@@ -522,6 +522,7 @@ function skip() {
     loadLoader();
     skipRequest.send();
     skipRequest.onload =function () {
+        score();
         let skipResponse =JSON.parse(skipRequest.responseText);
         console.log(skipResponse);
         nextQuestion();
@@ -541,9 +542,6 @@ function score() {
             let scoreResponse = JSON.parse(scoreRequest.responseText);
             console.log("Response of Score");
             console.log(scoreResponse);
-            if (!quizHasFinished && scoreResponse.score !== undefined) {
-                divInContent.innerHTML += "<div id='scoreDiv'>Score: " + scoreResponse.score + "</div>";
-            }
             scoreNumber = scoreResponse.score;
         }
     };
@@ -556,7 +554,7 @@ function score() {
  **************************************************************/
 function leaderboard(quizNumber) {
     navigation.push("leaderboard");
-    if( session !=="undefined" ||session!==null || session !==undefined) {
+    if(!quizHasFinished) {
         nav();
     }
     let leaderRequest = new XMLHttpRequest();
@@ -689,6 +687,7 @@ function createAnswerBox(type,canBeSkipped) {
     } else {
         footer.innerHTML = "<span>This question cannot be skipped</span>";
     }
+    answerBox += "<div id='scoreDiv'><br>Score: " + scoreNumber + "</div>";
 }
 
 function addHtmlAndAppend(parent, child, html){
@@ -701,8 +700,9 @@ function startOver() {
     session = "";
     quizName = "";
     answerBox = "";
-    qPlayed = "";
+    qPlayed = [];
     playersName = "";
+    scoreNumber = 0;
     listAvailableQuizzes();
 }
 
