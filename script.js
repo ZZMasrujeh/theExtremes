@@ -373,7 +373,6 @@ function nextQuestion() {
     if (navigation.length === 0) {   //In the scenario 2 the navigation starts empty. pushing the 'list' will provide
         navigation.push("list");    //the user with something to navigate out of the question.
     }
-
     nav();//places the back button, no matter the scenario
     let questionRequest = new XMLHttpRequest();
     questionRequest.open("GET", QUESTION + SESSION + session,true);
@@ -398,6 +397,7 @@ function nextQuestion() {
                     header.innerHTML = "Treasure hunt over.";
                     quizName = "";
                     answerBox = "";
+
                     deleteCookie();
                     footer.innerHTML = createdBy;
                     let message =  "Congratulations " + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
@@ -405,7 +405,7 @@ function nextQuestion() {
                     session = "";
                     console.log("message before final display ");
                     console.log(message);
-
+                    navigation = ["list"];
                     displayPreviousAnswers(message);
                     qPlayed = [];
                     playersName = "";
@@ -726,28 +726,21 @@ function updateQuizSelected() {
     }
 }
 
-function loadCss() {
+function switchCSS() {
     let head = document.getElementsByTagName('head')[0];
-    if (document.getElementById("nightMode").checked) {
-        let oldLink = document.getElementById("day");
-        head.removeChild(oldLink);
-        let link = document.createElement('link');
-        link.href = 'DesignNight.css';
-        link.id = "night";
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.media = 'all';
-        head.appendChild(link);
-    }else {
-        let oldLink = document.getElementById("night");
-        head.removeChild(oldLink);
-        let link = document.createElement('link');
-        link.href = 'Design2.css';
+    let link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.media = 'all';
+    if (document.getElementById("day") === null) {
         link.id = "day";
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.media = 'all';
-        head.appendChild(link);
-
+        link.href = "Design2.css";
+        var oldLink = document.getElementById("night");
+    }else{
+        link.id = "night";
+        link.href = 'DesignNight.css';
+         oldLink = document.getElementById("day");
     }
+    head.appendChild(link);
+    head.removeChild(oldLink);
 }

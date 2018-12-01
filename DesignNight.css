@@ -55,7 +55,7 @@ body{
 }
 
 #loader {
-    border: 35px solid black;
+    border: 35px solid gray;
     border-top: 35px solid white;
     border-radius: 50%;
     width: 200px;
@@ -64,6 +64,8 @@ body{
     position: relative;
     left: 6%;
     top: 12%;
+    /*left: 50%;*/
+
 }
 #divInContent{
     position: relative;
@@ -75,16 +77,20 @@ body{
     100% { transform: rotate(360deg);
     }
 }
-#skipButton{
-    float: left;
-}
 #scoreDiv{
     clear: both;
 }
+#skipButton{
+    float: left;
+    font-size: 1em;
+}
 #answerButton{
     float: right;
+    font-size: 1em;
 }
-
+#proceedButton{
+    font-size: 1em;
+}
 .availableQuiz{
     border: solid 1pt white;
     border-radius: 10pt;
@@ -98,6 +104,10 @@ body{
     width: 99%;
     contain: content;
 }
+#tHDetailsDiv{
+    text-align: left;
+}
+
 #leaderDiv ul{
     list-style: none;
     margin: 0;
@@ -119,6 +129,8 @@ input[type=text],input[type=number]{
 #buttonList {
     padding: 0;
     margin: 0;
+    position: relative;
+    top: -2%;
 }
 #buttonsInDetails input, button {
     color: white;
@@ -130,11 +142,15 @@ input[type=text],input[type=number]{
     margin-right: 4%;
 }
 #homeButton, #restartButton,#backButton,#qr,#nightMode{
-    font-size: 1.4em;
+    font-size: 1.6em;
     background-color: black;
 
 }
 #nightModeLI{
     padding-top: 3%;
     padding-bottom: 1.5%;
+}
+#nameInput,#startButton,#leaderButton{
+    font-size: 0.9em;
+    margin-bottom: 5%;
 }
