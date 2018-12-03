@@ -15,37 +15,39 @@
 </head>
 <body>
 
-<video id="preview"></video>
-<div class="content"></div>
-
 <script src="instascan.min.js"></script>
 <script>
-    var opts = {continuous: true,video: document.getElementById('preview'),mirror: true,
-        captureImage: false,backgroundScan: true,refractoryPeriod: 5000, scanPeriod: 1
-    };
-    var scanner = new Instascan.Scanner(opts);
     Instascan.Camera.getCameras().then(function (cameras) {
         if (cameras.length > 0) {
             for (let i = 0; i <cameras.length ; i++) {
-                // if (cameras[i].name.includes("Rear")||cameras[i].name.includes("rear")) {
-                    scanner.start(cameras[i]);
-                    // break;
-                // }
+                let video = document.createElement("video");
+                video.id = "preview" + i;
+                document.body.appendChild(video);
+                video.style.cssFloat = "left";
+                var opts = {continuous: true,video: document.getElementById('preview'+i),mirror: true,
+                    captureImage: false,backgroundScan: true,refractoryPeriod: 5000, scanPeriod: 1
+                };
+                var scanner = new Instascan.Scanner(opts);
+
+                let content = document.createElement("div");
+                content.id = "content" + i;
+                document.body.appendChild(content);
+                scanner.addListener('scan', function (content) {
+                    console.log(content);
+                    document.getElementById(content.id).innerHTML = content;
+                });
+                scanner.start(cameras[i]);
             }
-            // scanner.start(cameras[1]);
             console.log(cameras);
         } else {
             console.error('No cameras found.');
             alert("No cameras found.");
+            window.location.href = "App.html";
         }
     }).catch(function (e) {
         console.error(e);
     });
 
-    scanner.addListener('scan', function (content) {
-        console.log(content);
-        document.getElementById("content").innerHTML = content;
-    });
 </script>
 
 </body>
