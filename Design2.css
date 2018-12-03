@@ -78,13 +78,16 @@ body{
 #skipButton{
     float: left;
     font-size: 1em;
+    background-color: #fff;
 }
 #answerButton{
     float: right;
     font-size: 1em;
+    background-color: #fff;
 }
 #proceedButton{
     font-size: 1em;
+    background-color: #fff;
 }
 .availableQuiz{
     border: solid 1pt black;
@@ -94,6 +97,9 @@ body{
 }
 #finished{
     text-align: left;
+    border: dotted 2pt black;
+    font-weight: bold;
+    font-style: italic;
 }
 #bigDivInContent{
     width: 99%;
@@ -120,6 +126,7 @@ input[type=radio] {
 #buttonList {
     padding: 0;
     margin: 0;
+    background-color: #fff;
 }
 #buttonList li{
     display: inline-block;
@@ -127,8 +134,10 @@ input[type=radio] {
 }
 #homeButton, #restartButton,#backButton,#qr,#nightMode{
     font-size: 1.6em;
+    background-color: #fff;
 }
 #nameInput,#startButton,#leaderButton{
     font-size: 0.9em;
     margin-bottom: 5%;
+    background-color: #fff;
 }
