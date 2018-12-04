@@ -28,7 +28,9 @@ body{
     top: 11%;
     min-height: 8%;
     max-height: 8%;
-    border-radius: 20pt 20pt 5pt 5pt;    /*overflow: auto;*/
+    border-radius: 20pt 20pt 5pt 5pt;
+    font-size: 30px;
+    /*overflow: auto;*/
 }
 #content {
     font-size: 1em;
@@ -38,11 +40,12 @@ body{
     overflow: auto;
 }
 #footer{
-    font-size: 0.7em;
+    /*font-size: 0.7em;*/
     top: 86.5%;
     min-height: 8%;
     max-height: 8%;
     border-radius: 5pt 5pt 20pt 20pt;
+    font-size: 25px;
     /*overflow: auto;*/
 }
 
@@ -78,13 +81,16 @@ body{
 #skipButton{
     float: left;
     font-size: 1em;
+    background-color: darkgray;
 }
 #answerButton{
     float: right;
     font-size: 1em;
+    background-color: darkgray;
 }
 #proceedButton{
     font-size: 1em;
+    background-color:darkgray;
 }
 .availableQuiz{
     border: solid 1pt black;
@@ -94,6 +100,9 @@ body{
 }
 #finished{
     text-align: left;
+    font-weight: bold;
+    font-style: italic;
+    border-radius: 10px 10px 3px 3px;
 }
 #bigDivInContent{
     width: 99%;
@@ -127,8 +136,10 @@ input[type=radio] {
 }
 #homeButton, #restartButton,#backButton,#qr,#nightMode{
     font-size: 1.6em;
+    background-color: darkgray;
 }
 #nameInput,#startButton,#leaderButton{
     font-size: 0.9em;
     margin-bottom: 5%;
+    background-color: darkgray;
 }
