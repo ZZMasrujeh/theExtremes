@@ -25,7 +25,8 @@
                 video.id = "preview";
                 document.body.appendChild(video);
                 // video.style.cssFloat = "left";
-                var opts = {continuous: true,video: document.getElementById('preview'+i),mirror: true,
+                // var opts = {continuous: true,video: document.getElementById('preview'+i),mirror: true,
+                var opts = {continuous: true,video: document.getElementById('preview'),mirror: true,
                     captureImage: false,backgroundScan: true,refractoryPeriod: 5000, scanPeriod: 1
                 };
                 var scanner = new Instascan.Scanner(opts);
