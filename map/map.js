@@ -1,22 +1,16 @@
-function readFromCookie(property) {
-    let kv = document.cookie.split(";");
-    for (let i = 0; i < kv.length; i++) {
-        if (kv[i].includes(property+"=")) {
-            return kv[i].replace(""+property + "=","");
-        }
-    }
+if (readFromCookie("positions") !== undefined) {
+    navigator.geolocation.getCurrentPosition(drawMap);
+}else {
+    console.log("no positions");
+    document.getElementById("mapContainer").innerHTML = "The map has nothing to show";
 }
 
 
-if (readFromCookie("positions") !== undefined) {
-
+function drawMap(currentPosition) {
     console.log("positions");
 
     let positions = JSON.parse(readFromCookie("positions"));
     console.log(positions);
-    let lat = positions[0].lat;
-    let longi = positions[0].lon;
-
 
     let mapContainer = document.getElementById("mapContainer");
 
@@ -35,7 +29,7 @@ if (readFromCookie("positions") !== undefined) {
         defaultLayers.normal.map,
         {
             zoom: 16,
-            center: { lng: longi, lat: lat}
+            center: { lng: currentPosition.coords.longitude, lat: currentPosition.coords.latitude}
         });
 
     for (let i = 0; i < positions.length; i++) {
@@ -72,9 +66,14 @@ if (readFromCookie("positions") !== undefined) {
 
 
 
-}else {
-    console.log("no positions");
-    document.getElementById("mapContainer").innerHTML = "Nothing to show";
+
 }
 
-
+function readFromCookie(property) {
+    let kv = document.cookie.split(";");
+    for (let i = 0; i < kv.length; i++) {
+        if (kv[i].includes(property+"=")) {
+            return kv[i].replace(""+property + "=","");
+        }
+    }
+}
