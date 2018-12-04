@@ -65,6 +65,9 @@ var qObject;    //will contain {q:"question, a[]:"answers"}
 var currentQ;   //the questions before it is saved
 var usersA=[];  //all the answers before and including the correct answer or skip
 var endsOn;
+
+var positions = [];
+
 function loadLoader() {
     //attempting not to add another loader, because the spin will ne interrupted
     if ( document.getElementById("loader") != null ) {
@@ -94,6 +97,12 @@ if (document.cookie!==""){   //cookie is not empty
             content.innerHTML = readFromCookie("finalContent");
             header.innerHTML = readFromCookie("finalHeader");
             deleteCookie();
+            // deleteFromCookie("session");
+            // deleteFromCookie("quizName");
+            // deleteFromCookie("qPlayed");
+            // deleteFromCookie("playersName");
+            // deleteFromCookie("endsOn");
+
             /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
             refreshes more than once after the quiz has finished, he will end up here*/
         }
@@ -398,7 +407,6 @@ function nextQuestion() {
                     quizName = "";
                     answerBox = "";
 
-                    deleteCookie();
                     footer.innerHTML = createdBy;
                     let message =  "Congratulations " + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
                         '<button onclick="leaderboard('+ '\'' +session+'\''+')" id="leaderButton">Leaderboard</button>';
@@ -409,8 +417,15 @@ function nextQuestion() {
                     displayPreviousAnswers(message);
                     qPlayed = [];
                     playersName = "";
+                    deleteFromCookie("session");
+                    deleteFromCookie("quizName");
+                    deleteFromCookie("qPlayed");
+                    deleteFromCookie("playersName");
+                    deleteFromCookie("endsOn");
+
+                    // deleteCookie();
+
                 } else {
-                    document.getElementById("restartButton").style.display = "block";
                     /********************
                      *  Quiz goes on    *
                      *******************/
@@ -599,6 +614,9 @@ function getLocation() {
 function locationCallback(position) {
     let latitude = position.coords.latitude;
     let longitute = position.coords.longitude;
+    let pos = {lat: latitude, lon: longitute};
+    positions.push(pos);
+    saveInCookie("positions", JSON.stringify(positions), answersInCookieTime + endsOn);
 
     let locationRequest = new XMLHttpRequest();
     locationRequest.open("GET", LOCATION + SESSION + session + AMP + "latitude=" + latitude + AMP +
@@ -639,6 +657,10 @@ function displayPreviousAnswers(message="") {
         saveInCookie("finalContent", content.innerHTML, Date.now() + answersInCookieTime);
         saveInCookie("finalFooter", footer.innerHTML, Date.now() + answersInCookieTime);
         console.log(content.innerHTML);
+
+        if (session !== null || session !== undefined || session === "undefined") {
+            document.getElementById("mapButton").style.display = "block";
+        }
     }
 }
 let options = { day: 'numeric', month: 'short', hour: '2-digit',minute: '2-digit', second: '2-digit' };
