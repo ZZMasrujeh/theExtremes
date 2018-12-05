@@ -15,7 +15,8 @@ const SCORE = URL + "score?";
 const LOCATION = URL + "location?";
 const LOCATION_INTERVAL = 60000; //location will be updated every minute
 const createdBy = "Created by theExtremes";
-const answersInCookieTime = 90000;    /* the final section with all the previous answers will be stored for 3 minutes,unless:
+const answersInCookieTime = 180000;    /* the final section with all the previous answers will be stored for 3 minutes,
+for calling leaderboard with session id, unless:
 1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 is forthcoming (if the app starts
 from scenario 3, everything is deleted so it will not start from there every time) */
 
@@ -66,7 +67,7 @@ var currentQ;   //the questions before it is saved
 var usersA=[];  //all the answers before and including the correct answer or skip
 var endsOn;
 
-var positions = [];
+var positions = []; //locations are saved to be displayed on a map in the end
 
 function loadLoader() {
     //attempting not to add another loader, because the spin will ne interrupted
@@ -82,7 +83,7 @@ function loadLoader() {
 if (document.cookie!==""){   //cookie is not empty
     console.log(document.cookie);
 
-    if (readFromCookie("session") === undefined) {
+    if (readFromCookie("session") === undefined || readFromCookie("session")==="undefined") {
         if (readFromCookie("finalContent" === undefined)) {
             console.log("from 2-3 to 1");
             listAvailableQuizzes();
@@ -93,9 +94,13 @@ if (document.cookie!==""){   //cookie is not empty
             console.log("Scenario 3");
             navigation.push("list");
             nav();
-            footer.innerHTML = readFromCookie("finalFooter");
-            content.innerHTML = readFromCookie("finalContent");
-            header.innerHTML = readFromCookie("finalHeader");
+            if (readFromCookie("finalHeader") !== undefined) {
+                footer.innerHTML = readFromCookie("finalFooter");
+                content.innerHTML = readFromCookie("finalContent");
+                header.innerHTML = readFromCookie("finalHeader");
+            }else {
+                listAvailableQuizzes();
+            }
             deleteCookie();
             // deleteFromCookie("session");
             // deleteFromCookie("quizName");

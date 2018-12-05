@@ -2,54 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>QR Code Reader</title>
-    <style>
-        .content{
-            margin: 20px;
-            padding: 20px;
-            background-color: black;
-            color: white;
-            text-align: center;
-        }
-    </style>
+    <title>Reader</title>
+    <!--<link rel="stylesheet" type="text/css" href="Design2.css">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="instascan.min.js"></script>
 </head>
 <body>
+<button class="homeButton" onclick="location.href='App.html'">Back to Game</button>
 
-<script src="instascan.min.js"></script>
+<p>Camera Display Here:</p>
+<video id="preview"></video>
+<div id="content">QR code response:</div>
 <script>
-    Instascan.Camera.getCameras().then(function (cameras) {
-        if (cameras.length > 0) {
-            // for (let i = 0; i <cameras.length ; i++) {
-                let video = document.createElement("video");
-                // video.id = "preview" + i;
-                video.id = "preview";
-                document.body.appendChild(video);
-                // video.style.cssFloat = "left";
-                // var opts = {continuous: true,video: document.getElementById('preview'+i),mirror: true,
-                var opts = {continuous: true,video: document.getElementById('preview'),mirror: true,
-                    captureImage: false,backgroundScan: true,refractoryPeriod: 5000, scanPeriod: 1
-                };
-                var scanner = new Instascan.Scanner(opts);
-                let content = document.createElement("div");
-                // content.id = "content" + i;
-                content.id = "content";
-                document.body.appendChild(content);
-                scanner.addListener('scan', function (content) {
-                    console.log(content);
-                    document.getElementById(content.id).innerHTML = content;
-                });
+    //Enable QR scanner, function from worksheet.
+    var opts = {
+        continuous: true,
+        video: document.getElementById('preview'),
+        mirror: true,
+        captureImage: false,
+        backgroundScan: true,
+        refractoryPeriod: 5000,
+        scanPeriod: 1
+    };
+    var scanner = new Instascan.Scanner(opts);
+    Instascan.Camera.getCameras()
+        .then(function (cameras) {
+            if (cameras.length > 0) {
                 scanner.start(cameras[1]);
-            // }
-            console.log(cameras);
-        } else {
-            console.error('No cameras found.');
-            alert("No cameras found.");
-            window.location.href = "App.html";
-        }
-    }).catch(function (e) {
-        console.error(e);
+            } else {
+                console.error('Camera Not Found.');
+                alert("Camera Not Found.");
+            }
+        }).catch(function (e) {
+        console.error("ERRORS FOUND: " + e);
+    });
+    scanner.addListener('scan', function (content) {
+        console.log(content);
+        document.getElementById("qrcontent").innerHTML = '<a href='+content+'>Result</a>';
     });
 </script>
+
+<div id="qrcontent"></div>
 
 </body>
 </html>

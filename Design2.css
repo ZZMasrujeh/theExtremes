@@ -134,7 +134,7 @@ input[type=radio] {
     display: inline-block;
     margin-right: 4%;
 }
-#homeButton, #restartButton,#backButton,#qr,#nightMode{
+#homeButton, #restartButton,#backButton,#qr,#nightMode,#mapButton{
     font-size: 1.6em;
     background-color: darkgray;
 }

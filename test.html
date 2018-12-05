@@ -1,76 +1,158 @@
-<!--
-Classes and IDs:
-#header     //header for every 'page'
-#content    //where the content of each section is displayed
-#footer     //where every other little information is displayed
-
-<button></button>   //so far, all buttons are of this element
-
-.availableQuiz  //<div>, every quiz available before clicking will have this class
-
-quizName        //<span>, the name of the quiz in each div ^, is a span element
-
-#nameInput      //<input> type='text', where the user will enter a name before starting a quiz
-
-#leaderP        //<p>, which contains a button for calling the leaderboard and also displaying the data once received.
-//temporary ???
-#leaderDiv      //<div>, result of the leaderboard button
-
-#leaderButton    //                     ↑ ↑ ↑
-
-#tHDetailsDiv   //<div>, contains details about a quiz once it is clicked
-
-#answerBox       //<input> type='text', textfield to write the answer in
-                //temporary
-
-#dials          //<div>, <input>s type='button       1 2 3
-                                                     4 5 6
-                                                     7 8 9
-                                                     . 0
-
-#radios          //<div><input type='radio'> 2 for boolean questions, 4 for multiple choice questions
-
-#backButton      //<button>                   ↑ ↑ ↑ ↑ ↑ ↑
-
-#resumeButton   //<button> resumes the active session
-
-#startButton    //<button> starts a selected th
-
-#skipButton
-
-#scoreDiv
-
-#divInContent   for things that are small enough to be centered in the contents div
-
-#bigDivInContent    for things big enough to be topped and scrolled in the contents div
--->
-
-<!--th 0 name in response of /list is Sample Treasure Hunt-->
-
-
-<!--questionHeader diaforetiko onoma apo tin protasi-->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Testing</title>
-    <link rel="stylesheet" href="Design2.css" type="text/css"/>
+    <meta charset="UTF-8">
+    <title>Testing page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
     <style>
-        #testControls{
-            background-color: lightgoldenrodyellow;
+        table{
+            border: solid black 1px;
+        }
+      td{
+          border-right: solid black 2px;
+          border-bottom: solid black 2px;
+          text-align: center;
+      }
+        th{
+            border-bottom: solid black 2px;
         }
     </style>
 </head>
 <body>
-<div id="header"></div>
-<div id="content">
+<h1>Testing page</h1>
 
-    <div id="loader"></div>
-    <br><BR><strong><u>Nothing</u></strong> is loading...
+<h2>User Acceptance Plan</h2>
+
+<!--<p>Here describe the User Acceptance plan you formed, and justify how your app performed to it.</p>-->
+<p>The web app was given to members of other teams, for <b>black box testing</b> in an effort to identify mistakes.
+    The users who tested the app suggested that our app should have bigger buttons (also suggested by our lab tutor), so the are easier to touch.
+Other than that they haven't pointed out any major usability issues</p>
+
+<h2>Usability Assessment</h2>
+
+<table>
+    <tr>
+        <th>Heuristic</th>
+        <th>Compliance</th>
+        <th>Comment</th>
+    </tr>
+    <tr>
+        <td>Visibility of system status</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>Server error messages are displayer</td>
+    </tr>
+    <tr>
+        <td>Match between system and the real world</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>Icons used: e.g. moon for night mode</td>
+    </tr>
+    <tr>
+        <td>User control and freedom</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>The user can exit and re-enter the app, and continue at exactly the same point</td>
+    </tr>
+    <tr>
+        <td>Consistency and standards</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>All pages are styled with the same stylesheets. Words used to describre actions are used universally</td>
+    </tr>
+    <tr>
+        <td>Error prevention</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>If there is no input the user is informed and no submission to the server takes place</td>
+    </tr>
+    <tr>
+        <td>Recognition rather than recall</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>if QR code is valid, a link is given instead of just writting it</td>
+    </tr>
+    <tr>
+        <td>Flexibility and efficiency of use</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>The user can exit and re-enter the app, and continue at exactly the same point</td>
+    </tr>
+    <tr>
+        <td>Aesthetic and minimalist design</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>Not too many colors are seen when the game is played</td>
+    </tr>
+    <tr>
+        <td>Help users recognize, diagnose, and recover from errors</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>If name is not given, a warning is shown</td>
+    </tr>
+    <tr>
+        <td>Help and documentation</td>
+        <td><i class="material-icons">done_outline</i> </td>
+        <td>Sufficient comments that explain the functionality</td>
+
+    </tr>
+</table>
+
+
+<h2>Unit Tests</h2>
+
+<p>The Unit Tests are utilised with the use of <a href="https://codecyprus.org/th/testing" target="_blank">https://codecyprus.org/th/testing</a>.</p>
+<div id="loader" class="loader" hidden></div>
+
+<h3>Testing <code>/list</code></h3>
+
+<button id="buttonTestList" class="button" onclick="testL(10)">Run Test</button>
+<button id="buttonClearList" class="button" onclick="document.getElementById('content').innerHTML = 'The results of the test to show up here...';">Clear</button>
+
+<div id="content" class="testMessage">
+    The results of the test to show up here...
 </div>
-<div id="footer" >Click something on the top and scroll down for more controls</div>
-<div id="testControls" ></div>
-<script src="test.js"></script>
-</body>
 
+<hr>
+
+<h3>Testing <code>/start</code></h3>
+
+<button id="buttonTestStart" class="button" onclick="testS()">Run Test</button>
+<button id="buttonClearStart" class="button" onclick="document.getElementById('message').innerHTML = 'Messages to show up here...'">Clear</button>
+
+<hr>
+
+<div id="message" class="errorMessage">
+    Messages to show up here...
+</div>
+
+<hr>
+
+<script>
+    function testL(number){
+        let tListRequest = new XMLHttpRequest();
+        tListRequest.open("GET", 'https://codecyprus.org/th/test-api/list?number-of-ths=' + number, true);
+        tListRequest.send();
+        tListRequest.onload = function () {
+            let listResponse = JSON.parse(this.responseText);
+            quizzes = listResponse.treasureHunts;
+            let htmlText = "";
+            for (let i = 0; i < quizzes.length; i++) {
+                htmlText +=
+                    "<button onclick='testShowMore("+i+")' class='availableQuiz'>" +
+                    " <span class='quizzName'>" + quizzes[i].name + ".</span><br></button><br>";
+            }
+            content.innerHTML = htmlText;
+        };
+    }
+
+
+    function testS() {
+        let testStartRequest = new XMLHttpRequest();
+        testStartRequest.open("GET", 'https://codecyprus.org/th/test-api/start?player=inactive', true);
+        testStartRequest.send();
+        testStartRequest.onload = function () {
+            if (this.status === 200) {
+                let tsrResponse = JSON.parse(testStartRequest.responseText);
+                document.getElementById("message") .innerHTML = tsrResponse.errorMessages;
+            }
+        };
+    }
+
+</script>
+</body>
 </html>

@@ -1,0 +1,76 @@
+<!--
+Classes and IDs:
+#header     //header for every 'page'
+#content    //where the content of each section is displayed
+#footer     //where every other little information is displayed
+
+<button></button>   //so far, all buttons are of this element
+
+.availableQuiz  //<div>, every quiz available before clicking will have this class
+
+quizName        //<span>, the name of the quiz in each div ^, is a span element
+
+#nameInput      //<input> type='text', where the user will enter a name before starting a quiz
+
+#leaderP        //<p>, which contains a button for calling the leaderboard and also displaying the data once received.
+//temporary ???
+#leaderDiv      //<div>, result of the leaderboard button
+
+#leaderButton    //                     ↑ ↑ ↑
+
+#tHDetailsDiv   //<div>, contains details about a quiz once it is clicked
+
+#answerBox       //<input> type='text', textfield to write the answer in
+                //temporary
+
+#dials          //<div>, <input>s type='button       1 2 3
+                                                     4 5 6
+                                                     7 8 9
+                                                     . 0
+
+#radios          //<div><input type='radio'> 2 for boolean questions, 4 for multiple choice questions
+
+#backButton      //<button>                   ↑ ↑ ↑ ↑ ↑ ↑
+
+#resumeButton   //<button> resumes the active session
+
+#startButton    //<button> starts a selected th
+
+#skipButton
+
+#scoreDiv
+
+#divInContent   for things that are small enough to be centered in the contents div
+
+#bigDivInContent    for things big enough to be topped and scrolled in the contents div
+-->
+
+<!--th 0 name in response of /list is Sample Treasure Hunt-->
+
+
+<!--questionHeader diaforetiko onoma apo tin protasi-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Testing</title>
+    <link rel="stylesheet" href="Design2.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #testControls{
+            background-color: lightgoldenrodyellow;
+        }
+    </style>
+</head>
+<body>
+<div id="header"></div>
+<div id="content">
+
+    <div id="loader"></div>
+    <br><BR><strong><u>Nothing</u></strong> is loading...
+</div>
+<div id="footer" >Click something on the top and scroll down for more controls</div>
+<div id="testControls" ></div>
+<script src="test.js"></script>
+</body>
+
+</html>
