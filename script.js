@@ -749,16 +749,26 @@ function addHtmlAndAppend(parent, child, html){
  * will be restored from the cookie                     *
  *******************************************************/
 function startOver() {
-    session = "";
-    quizName = "";
-    answerBox = "";
-    qPlayed = [];
-    playersName = "";
-    scoreNumber = 0;
-    mapLink = MAP_LINK;
-    poiCounter = 0;
-    endsOn = 0;
-    listAvailableQuizzes();
+    let alertMessage = "";
+    if (session !== "") {
+        alertMessage = "Are you sure you want start another treasure hunt ?" +
+            "\n" +
+            "\nIf you change your mind before starting a new hunt and want to return this one JUST REFRESH THE PAGE !";
+    }else {
+        alertMessage = "You are about to be directed to the beginning of the game";
+    }
+    if (confirm(alertMessage)){
+        session = "";
+        quizName = "";
+        answerBox = "";
+        qPlayed = [];
+        playersName = "";
+        scoreNumber = 0;
+        mapLink = MAP_LINK;
+        poiCounter = 0;
+        endsOn = 0;
+        listAvailableQuizzes();
+    }
 }
 
 /************************************************************************************
