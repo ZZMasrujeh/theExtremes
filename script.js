@@ -15,6 +15,10 @@ const SCORE = URL + "score?";
 const LOCATION = URL + "location?";
 const LOCATION_INTERVAL = 60000; //location will be updated every minute
 const createdBy = "Created by theExtremes";
+
+const MAP_LINK ='https://image.maps.api.here.com/mia/1.6/' +
+    'mapview?app_id=OxbDxE7r5OIxgAax63A2&app_code=iSQ7St5fwPVo6rhYjXVu-Q&z=15';
+
 const answersInCookieTime = 180000;    /* the final section with all the previous answers will be stored for 3 minutes,
 for calling leaderboard with session id, unless:
 1)the user starts another quiz, 2) the users refreshes in a time that scenario 3 is forthcoming (if the app starts
@@ -67,7 +71,8 @@ var currentQ;   //the questions before it is saved
 var usersA=[];  //all the answers before and including the correct answer or skip
 var endsOn;
 
-var positions = []; //locations are saved to be displayed on a map in the end
+var mapLink = MAP_LINK;
+var poiCounter =0;
 
 function loadLoader() {
     //attempting not to add another loader, because the spin will ne interrupted
@@ -94,20 +99,21 @@ if (document.cookie!==""){   //cookie is not empty
             console.log("Scenario 3");
             navigation.push("list");
             nav();
-            if (readFromCookie("finalHeader") !== undefined) {
+
+            console.log(document.cookie);
+            mapLink = readFromCookie("mapLink");
+            // mapLink = mapLink.substring(1);
+            console.log(mapLink);
+
+            if (content.innerHTML === "undefined") {
+                listAvailableQuizzes();
+            }else {
                 footer.innerHTML = readFromCookie("finalFooter");
                 content.innerHTML = readFromCookie("finalContent");
                 header.innerHTML = readFromCookie("finalHeader");
-            }else {
-                listAvailableQuizzes();
             }
-            deleteCookie();
-            // deleteFromCookie("session");
-            // deleteFromCookie("quizName");
-            // deleteFromCookie("qPlayed");
-            // deleteFromCookie("playersName");
-            // deleteFromCookie("endsOn");
 
+            deleteCookie();
             /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
             refreshes more than once after the quiz has finished, he will end up here*/
         }
@@ -126,10 +132,14 @@ if (document.cookie!==""){   //cookie is not empty
         playersName = playersName.substring(1);
         quizName = quizName.substring(1);
         endsOn = readFromCookie("endsOn");
+        mapLink = readFromCookie("mapLink");
+        mapLink = mapLink.substring(1).trim();
+        poiCounter = readFromCookie("poiCounter");
         score();
         console.log(quizName);
         console.log(playersName);
         console.log(endsOn);
+        console.log("maplink "+mapLink);
         updateQuizSelected();
         if (readFromCookie("qPlayed") === undefined) {   /*in case something goes wrong and the previous questions
         are not saved, the array will be initialized empty, probably nobody will notice that there are missing
@@ -362,6 +372,8 @@ function getQuiz(quizNumber) {
                     saveInCookie("quizName", quizSelected.name,endsOn);
                     quizName = quizSelected.name;
                     saveInCookie("playersName", playersName, endsOn);
+                    saveInCookie("mapLink", mapLink, answersInCookieTime + endsOn);
+                    saveInCookie("poiCounter", 0, answersInCookieTime + endsOn);
                     getLocation(); //first location call for scen 1
                     setInterval(getLocation,LOCATION_INTERVAL ); //repeated location calls
                     nextQuestion();
@@ -411,25 +423,18 @@ function nextQuestion() {
                     header.innerHTML = "Treasure hunt over.";
                     quizName = "";
                     answerBox = "";
-
                     footer.innerHTML = createdBy;
                     let message =  "Congratulations " + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
-                        '<button onclick="leaderboard('+ '\'' +session+'\''+')" id="leaderButton">Leaderboard</button>';
-                    session = "";
+                        '<button onclick="leaderboard('+ '\'' +session+'\''+')" id="leaderButton">Leaderboard</button>'+
+                        '<br><button onclick="map()"><i class="material-icons">place</i></button> ';
                     console.log("message before final display ");
                     console.log(message);
                     navigation = ["list"];
+                    deleteCookie();
                     displayPreviousAnswers(message);
                     qPlayed = [];
+                    session = "";
                     playersName = "";
-                    deleteFromCookie("session");
-                    deleteFromCookie("quizName");
-                    deleteFromCookie("qPlayed");
-                    deleteFromCookie("playersName");
-                    deleteFromCookie("endsOn");
-
-                    // deleteCookie();
-
                 } else {
                     /********************
                      *  Quiz goes on    *
@@ -619,9 +624,12 @@ function getLocation() {
 function locationCallback(position) {
     let latitude = position.coords.latitude;
     let longitute = position.coords.longitude;
-    let pos = {lat: latitude, lon: longitute};
-    positions.push(pos);
-    saveInCookie("positions", JSON.stringify(positions), answersInCookieTime + endsOn);
+    // console.log("poi counter in location callback" + poiCounter);
+    poiCounter = poiCounter.substring(1);
+    mapLink= mapLink.concat("&poix" + poiCounter + "=" + latitude + "," + longitute);
+    saveInCookie("mapLink", mapLink,endsOn);
+    poiCounter++;
+    saveInCookie("poiCounter", poiCounter,endsOn);
 
     let locationRequest = new XMLHttpRequest();
     locationRequest.open("GET", LOCATION + SESSION + session + AMP + "latitude=" + latitude + AMP +
@@ -656,17 +664,12 @@ function displayPreviousAnswers(message="") {
     }
     finalContent += "</div>";
     addHtmlAndAppend(content, bigDivInContent, finalContent);
-    if (session === "") {
-        console.log("final Content");
-        saveInCookie("finalHeader", header.innerHTML, Date.now() + answersInCookieTime);
-        saveInCookie("finalContent", content.innerHTML, Date.now() + answersInCookieTime);
-        saveInCookie("finalFooter", footer.innerHTML, Date.now() + answersInCookieTime);
-        console.log(content.innerHTML);
-
-        if (session !== null || session !== undefined || session === "undefined") {
-            document.getElementById("mapButton").style.display = "block";
-        }
-    }
+    console.log("final Content");
+    saveInCookie("finalHeader", header.innerHTML, Date.now() + answersInCookieTime);
+    saveInCookie("finalContent", content.innerHTML, Date.now() + answersInCookieTime);
+    saveInCookie("finalFooter", footer.innerHTML, Date.now() + answersInCookieTime);
+    saveInCookie("mapLink", mapLink, Date.now()+ answersInCookieTime);
+    console.log(content.innerHTML);
 }
 let options = { day: 'numeric', month: 'short', hour: '2-digit',minute: '2-digit', second: '2-digit' };
 
@@ -730,6 +733,9 @@ function startOver() {
     qPlayed = [];
     playersName = "";
     scoreNumber = 0;
+    mapLink = MAP_LINK;
+    poiCounter=0;
+    endsOn = 0;
     listAvailableQuizzes();
 }
 
@@ -766,8 +772,12 @@ function switchCSS() {
     }else{
         link.id = "night";
         link.href = 'DesignNight.css';
-         oldLink = document.getElementById("day");
+        oldLink = document.getElementById("day");
     }
     head.appendChild(link);
     head.removeChild(oldLink);
+}
+
+function map() {
+    window.location.href = mapLink;
 }
