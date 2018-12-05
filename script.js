@@ -58,7 +58,7 @@ divInContent.id = "divInContent";
 let bigDivInContent = document.createElement("div");
 bigDivInContent.id = "bigDivInContent";
 
-var loader ="<div id = 'loader'></div>";
+var loader ="<div style='display:inline-block' id = 'loader'></div>";
 
 var scoreNumber =0; //saving the score every time it is updated, no AJAX after the quiz is finished
 
@@ -81,7 +81,7 @@ function loadLoader() {
         console.log("contains loader");
     }else {
         console.log("doesnt contain loader");
-        content.innerHTML = loader;
+        addHtmlAndAppend(content, divInContent, loader);
     }
 }
 
@@ -671,17 +671,29 @@ function displayPreviousAnswers(message="") {
 }
 let options = { day: 'numeric', month: 'short', hour: '2-digit',minute: '2-digit', second: '2-digit' };
 
+/********************************************************************
+ * Creates a leaderboard entry                                      *
+ * @param i the number of the entry in the sorted leaderboard list  *
+ * @param object the leaderboard object                             *
+ * @returns {string} the entry to be embedded in an HTML element    *
+ *******************************************************************/
 function leaderBoardEntry(i,object) {
     let date = new Date(object.completionTime);
     let formattedDate = date.toLocaleDateString("en-UK", options);
     let entry ="<li>"+
         "<strong>"+i+"</strong> "+
         "<i>"+object.player+"</i> "+
-        "<strong>"+object.score+"</strong> "+
-        "<small>"+formattedDate+"</small>"+
+        "<strong>Score: "+object.score+",</strong> "+
+        "<small> ended on: "+formattedDate+",</small>"+
         "</li>";
     return entry;
 }
+
+/************************************************************************
+ * Depending on the question type, the appropriate controls are given   *
+ * @param type the question type                                        *
+ * @param canBeSkipped wheter the question can be skipped or not        *
+ ***********************************************************************/
 function createAnswerBox(type,canBeSkipped) {
     if (type === "INTEGER" || type === "NUMERIC" ) {
         //dials and textfield answerButton

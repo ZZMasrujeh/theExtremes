@@ -61,10 +61,7 @@ body{
     width: 200px;
     height: 200px;
     animation: spin 1s linear infinite;
-    position: relative;
-    left: 6%;
-    top: 12%;
-}
+    }
 #divInContent{
     position: relative;
     top: 50%;
