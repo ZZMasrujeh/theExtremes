@@ -26,3 +26,9 @@ This meeting is also done online. At this point we are discussing whether we sho
 Week 6 (23/11)
 Attendance: Andreas, Konstantinos, Zacharias
 The app is progressing and we are considering various usability issues, such as how the app should respond if the users has finished a treasure hunt, how and at which point we should display a leaderboard, etc. Konstantinos has provided most of the content we had to create and will start focusing on social media. Andreas has progressed further with the design and Zacharias has finished implementing all API requests and will focus on some testing aspects.
+Week 7 ()
+No meeting took place.
+
+Week 8(5/12)
+Attendance: Andreas, Zacharias
+This meeting took place in the 4 hour support session in the university. We discussed what needed to be fixed and what final touched should be added.

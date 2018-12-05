@@ -45,7 +45,7 @@ body{
     min-height: 8%;
     max-height: 8%;
     border-radius: 5pt 5pt 20pt 20pt;
-    font-size: 25px;
+    font-size: 20px;
     /*overflow: auto;*/
 }
 
@@ -138,8 +138,22 @@ input[type=radio] {
     font-size: 1.6em;
     background-color: darkgray;
 }
-#nameInput,#startButton,#leaderButton{
+#nameInput{
+    font-size: 0.9em;
+    margin-bottom: 5%;
+    background-color: #fff;
+}
+#startButton,#leaderButton{
     font-size: 0.9em;
     margin-bottom: 5%;
     background-color: darkgray;
+}
+#facebook{
+    padding: 20px;
+    font-size: 30px;
+    width: 30px;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px 2px;
+    border-radius: 50%;
 }
