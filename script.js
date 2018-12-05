@@ -16,6 +16,7 @@ const LOCATION = URL + "location?";
 const LOCATION_INTERVAL = 60000; //location will be updated every minute
 const createdBy = "Created by theExtremes";
 
+//using HERE maps api, an image will be called showing a map with the points where the location was updated
 const MAP_LINK ='https://image.maps.api.here.com/mia/1.6/' +
     'mapview?app_id=OxbDxE7r5OIxgAax63A2&app_code=iSQ7St5fwPVo6rhYjXVu-Q&z=15';
 
@@ -625,7 +626,9 @@ function locationCallback(position) {
     let latitude = position.coords.latitude;
     let longitute = position.coords.longitude;
     // console.log("poi counter in location callback" + poiCounter);
-    poiCounter = poiCounter.substring(1);
+    if (isNaN(poiCounter)) {
+        poiCounter = poiCounter.substring(1);
+    }
     mapLink= mapLink.concat("&poix" + poiCounter + "=" + latitude + "," + longitute);
     saveInCookie("mapLink", mapLink,endsOn);
     poiCounter++;
