@@ -87,7 +87,7 @@ function loadLoader() {
 
 //continuing from previous session
 if (document.cookie!==""){   //cookie is not empty
-    console.log(document.cookie);
+    // console.log(document.cookie);
 
     if (readFromCookie("session") === undefined || readFromCookie("session")==="undefined") {
         if (readFromCookie("finalContent" === undefined)) {
@@ -97,17 +97,17 @@ if (document.cookie!==""){   //cookie is not empty
             /***********************
              * start of Scenario 3 *
              * ********************/
-            console.log("Scenario 3");
-            navigation.push("list");
+            // console.log("Scenario 3");
+            navigation.push("list"); /*in case something goes wrong and the back button is clickable,
+            this will provide something to go back to */
             nav();
 
-            console.log(document.cookie);
+            // console.log(document.cookie);
             mapLink = readFromCookie("mapLink");
-            // mapLink = mapLink.substring(1);
-            console.log(mapLink);
+            // console.log(mapLink);
 
             if (content.innerHTML === "undefined") {
-                listAvailableQuizzes();
+                listAvailableQuizzes();     //in case everything was stored incorrectly, the app starts from the beginning
             }else {
                 footer.innerHTML = readFromCookie("finalFooter");
                 content.innerHTML = readFromCookie("finalContent");
@@ -115,44 +115,45 @@ if (document.cookie!==""){   //cookie is not empty
             }
 
             deleteCookie();
-            /*once the previous questions are loaded, everything will be deleted. Otherwise, if the user
-            refreshes more than once after the quiz has finished, he will end up here*/
+            /*once the previous questions are loaded, everything will be deleted, so the user doesnt always
+            start from here*/
         }
     }else {
         /***********************
          * Start of scenario 2 *
          ***********************/
-        console.log("Scenario 2");
-        console.log("cookie contents");     //once I am done console.logs will be deleted
+        // console.log("Scenario 2");
+        // console.log("cookie contents");     //once I am done console.logs will be deleted
 
         session = readFromCookie("session");
-        console.log("Read session from cookie " + readFromCookie("session"));
+        // console.log("Read session from cookie " + readFromCookie("session"));
 
         quizName = readFromCookie("quizName");
         playersName = readFromCookie("playersName");
-        playersName = playersName.substring(1);
+        playersName = playersName.substring(1); //some values start with space, not enough time to find out why
         quizName = quizName.substring(1);
         endsOn = readFromCookie("endsOn");
         mapLink = readFromCookie("mapLink");
         mapLink = mapLink.substring(1).trim();
         poiCounter = readFromCookie("poiCounter");
         score();
-        console.log(quizName);
-        console.log(playersName);
-        console.log(endsOn);
+        // console.log(quizName);
+        // console.log(playersName);
+        // console.log(endsOn);
         console.log("maplink "+mapLink);
-        updateQuizSelected();
+        updateQuizSelectedNumber();
         if (readFromCookie("qPlayed") === undefined) {   /*in case something goes wrong and the previous questions
         are not saved, the array will be initialized empty, probably nobody will notice that there are missing
         questions. I wouldn't ! */
-            console.log("Previous q&a restarted");
+
+            // console.log("Previous q&a restarted");
             qPlayed = [];
         }else {
-            console.log("Previous q&a loaded");
+            // console.log("Previous q&a loaded");
             qPlayed = JSON.parse(readFromCookie("qPlayed"));
         }
-        console.log(qPlayed);
-        getLocation(); //first location call for scen 2
+        // console.log(qPlayed);
+        getLocation(); //first location call for scenario 2
         setInterval(getLocation,LOCATION_INTERVAL );    //repeated location calls
         nextQuestion(); //will take the player to the last unanswered question, if there is one
     }
@@ -165,11 +166,10 @@ if (document.cookie!==""){   //cookie is not empty
     footer.innerHTML = createdBy;
 }
 
-/************************************************************
- * places the backButton in setions that call it. so far:   *
- * showMore(), nextQuestion()                               *
- * ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
- ***********************************************************/
+/****************************************************************
+ * places the backButton in the sections that call it. so far:  *
+ * showMore(), nextQuestion()                                   *
+ ***************************************************************/
 function nav() {
     if (navigation.length > 0) {
         backButton.style.display = "block";
@@ -178,7 +178,6 @@ function nav() {
 
 /***********************************************************
  * Determnines what to show when the backButton is pressed *
- *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  ***********************************************************/
 function backAction() {
     switch (navigation[navigation.length-1]) {
@@ -203,7 +202,6 @@ function backAction() {
  * W3Schools  https://www.w3schools.com/js/js_cookies.asp         *
  * I have thought of how to handle the cookie after reading from  *
  * the link above                                                 *
- *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  ******************************************************************/
 function saveInCookie(property,value,endsOn){
     let expiryTime = new Date(endsOn);
@@ -241,7 +239,6 @@ function deleteFromCookie(property) {
     }
 }
 /**************************************************************
- * ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ *
  * W3Schools  https://www.w3schools.com/js/js_cookies.asp     *
  *************************************************************/
 
@@ -249,7 +246,6 @@ function deleteFromCookie(property) {
  * listAvailableQuizzes()                                                    *
  * Loads and shows all available quizz NAMES ONLY, once the page is visited, *
  * or when the back button is pressed when viewing the details of a quiz     *
- *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  ****************************************************************************/
 function listAvailableQuizzes() {
     let listRequest = new XMLHttpRequest();
@@ -283,11 +279,10 @@ function listAvailableQuizzes() {
     };
 }
 
-/**************************************************************************
- * Shows more details for the treasure hunt selected, after /list is done *
- * @param quizN: the index of the array returned by /list            *
- *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
- *************************************************************************/
+/****************************************************************************
+ * Shows more details for the treasure hunt selected, after /list is done   *
+ * @param quizN: the index of the array returned by /list                   *
+ ***************************************************************************/
 function showMore(quizN) {  //more details about the selected quiz
     quizNumber = quizN;
     quizSelected = quizzes[quizN];
@@ -340,8 +335,7 @@ function showMore(quizN) {  //more details about the selected quiz
 /*********************************************************************
  *  ONLY in Scenario 1:                                              *
  *  saves everything in cookie and makes the first call of /question *
- * @param quizNumber: the index of the array returned by /list       *
- * ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
+ * @param quizNumber the index of the array returned by /list        *
  ********************************************************************/
 function getQuiz(quizNumber) {
     playersName = document.getElementById("nameInput").value;
@@ -392,8 +386,7 @@ function getQuiz(quizNumber) {
 /******************************************************************************************
  * Displays the question, and forms an area for the answer with the appropriate controls. *
  * Also where the TH IS COMPLETED                                                         *
- *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ *
- ******************************************************************************************/
+ *****************************************************************************************/
 function nextQuestion() {
     console.log("players name " + playersName);
     loadLoader();
@@ -420,7 +413,6 @@ function nextQuestion() {
                     /**************************************
                      *        Quiz has finished           *
                      *************************************/
-                    //clear all
                     header.innerHTML = "Treasure hunt over.";
                     quizName = "";
                     answerBox = "";
@@ -428,11 +420,11 @@ function nextQuestion() {
                     let message =  "Congratulations " + playersName+" <br>Your final score is "+scoreNumber+" points.<br>"+
                         '<button onclick="leaderboard('+ '\'' +session+'\''+')" id="leaderButton">Leaderboard</button>'+
                         '<br><button onclick="map()"><i class="material-icons">place</i></button> ';
-                    console.log("message before final display ");
-                    console.log(message);
-                    navigation = ["list"];
+                    // console.log("message before final display ");
+                    // console.log(message);
                     deleteCookie();
                     displayPreviousAnswers(message);
+                    navigation = ["list"];
                     qPlayed = [];
                     session = "";
                     playersName = "";
@@ -452,7 +444,6 @@ function nextQuestion() {
                     if (questionResponse.requiresLocation) {
                         footer.innerHTML = "You must be near the location to answer";
                     }
-
                 }
             }else {
                 addHtmlAndAppend(content,divInContent,questionResponse.errorMessages[0]);
@@ -619,20 +610,23 @@ function getLocation() {
 
 /**********************************************
  * Called once geolocation has been completed *
+ * and update the link for the map in the end *
  * @param position: given by  getLocation()   *
  *  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓  *
  *********************************************/
 function locationCallback(position) {
     let latitude = position.coords.latitude;
     let longitute = position.coords.longitude;
-    // console.log("poi counter in location callback" + poiCounter);
-    if (isNaN(poiCounter)) {
+
+    if (poiCounter.length > 1) {
         poiCounter = poiCounter.substring(1);
     }
+    //HERE maps point of interest
     mapLink= mapLink.concat("&poix" + poiCounter + "=" + latitude + "," + longitute);
     saveInCookie("mapLink", mapLink,endsOn);
     poiCounter++;
     saveInCookie("poiCounter", poiCounter,endsOn);
+    console.log(mapLink);
 
     let locationRequest = new XMLHttpRequest();
     locationRequest.open("GET", LOCATION + SESSION + session + AMP + "latitude=" + latitude + AMP +
@@ -667,12 +661,13 @@ function displayPreviousAnswers(message="") {
     }
     finalContent += "</div>";
     addHtmlAndAppend(content, bigDivInContent, finalContent);
+    //the cookie was deleted just before this call so I don't have to delete, what I don't need any longer, manually
     console.log("final Content");
     saveInCookie("finalHeader", header.innerHTML, Date.now() + answersInCookieTime);
     saveInCookie("finalContent", content.innerHTML, Date.now() + answersInCookieTime);
     saveInCookie("finalFooter", footer.innerHTML, Date.now() + answersInCookieTime);
     saveInCookie("mapLink", mapLink, Date.now()+ answersInCookieTime);
-    console.log(content.innerHTML);
+    // console.log(content.innerHTML);
 }
 let options = { day: 'numeric', month: 'short', hour: '2-digit',minute: '2-digit', second: '2-digit' };
 
@@ -723,12 +718,24 @@ function createAnswerBox(type,canBeSkipped) {
     answerBox += "<div id='scoreDiv'><br>Score: " + scoreNumber + "</div>";
 }
 
+/************************************************************
+ * Adds content to an HTML element and appends that element *
+ * to another.                                              *
+ * @param parent the parent element                         *
+ * @param child the child element                           *
+ * @param html the inner HTML                               *
+ ************************************************************/
 function addHtmlAndAppend(parent, child, html){
     parent.innerHTML = "";
     child.innerHTML = html;
     parent.appendChild(child);
 }
 
+/********************************************************
+ * Resets necessary variables to start another TH.      *
+ * If the button was pressed accidentally everything    *
+ * will be restored from the cookie                     *
+ *******************************************************/
 function startOver() {
     session = "";
     quizName = "";
@@ -737,12 +744,17 @@ function startOver() {
     playersName = "";
     scoreNumber = 0;
     mapLink = MAP_LINK;
-    poiCounter=0;
+    poiCounter = 0;
     endsOn = 0;
     listAvailableQuizzes();
 }
 
-function updateQuizSelected() {
+/************************************************************************************
+ * If the app is restarted, there is no way to know if the quiz selected is in the  *
+ * same position in the quiz list. This function will provide that number from the  *
+ * possibly new list.                                                               *
+ ***********************************************************************************/
+function updateQuizSelectedNumber() {
     let listRequest = new XMLHttpRequest();
     listRequest.open("GET", LIST, true);
     listRequest.send();
@@ -762,6 +774,10 @@ function updateQuizSelected() {
     }
 }
 
+/************************************************************
+ * Change the css file from the original to 'night' mode,   *
+ * and vice versa.                                          *
+ ***********************************************************/
 function switchCSS() {
     let head = document.getElementsByTagName('head')[0];
     let link = document.createElement('link');
