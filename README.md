@@ -8,3 +8,5 @@ The quiz take the questions from https://codecyprus.org/th/api/, and the user wi
 As part of the assignment, we also have to market the web app as an actual product.
 
 The team members are: Mammatsiou Andreas, Masrujeh Zoher Zacharias and Nikolopoulos Konstantinos.
+
+https://zzmasrujeh.github.io/theExtremes/
